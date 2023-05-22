@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Warp Journal – Honkai: Star Rail Gacha Tracker</title>
+    <meta charset="utf-8">
+    <link rel="icon" href="static/icon.png">
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body x-data="app()">
+    <svg id="svg-defs">
+        <g id="settings-icon">
+            <path d="m0 1h10v1h-10v-1z"/>
+            <path d="m0 8h10v1h-10v-1z"/>
+            <path d="m0 4.5h10v1h-10v-1z"/>
+            <path d="m4 1.5a1.5 1.5 0 0 1-1.5 1.5 1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 1 1.5-1.5 1.5 1.5 0 0 1 1.5 1.5z"/>
+            <path d="m5.5 8.5a1.5 1.5 0 0 1-1.5 1.5 1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 1 1.5-1.5 1.5 1.5 0 0 1 1.5 1.5z"/>
+            <path d="m9 5a1.5 1.5 0 0 1-1.5 1.5 1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 1 1.5-1.5 1.5 1.5 0 0 1 1.5 1.5z"/>
+        </g>
+    </svg>
+
+    <div id="bg-stars">
+        <div class="c1"></div>
+        <div class="c2"></div>
+        <div class="c3"></div>
+        <div class="c4"></div>
+    </div>
+
+    <main>
+        <header class="flex-header">
+            <h1>Warp Journal</h1>
+            <a class="update" href="https://github.com/Ennea/warp-journal/releases/latest"
+                target="_blank" x-show="showUpdateNotification">New version available</a>
+        </header>
+
+        <div id="update-container">
+            <p>
+                Warp Journal will attempt to automatically fetch the link that is required to update your warp history. For this to work, you need to first open the warp history in-game. Afterwards, you can click the button below. If that does not work or if you would like to provide the link yourself, you can enable manual mode.
+            </p>
+
+            <label class="checkbox">
+                <input type="checkbox" x-model="manualUpdate">
+                <span class="checkbox"></span>
+                <span class="label">Manual mode</span>
+            </label>
+            <br>
+
+            <form class="input-container" @submit="updateWarps($event)">
+                <input type="text" placeholder="Warp history URL" x-model="warpHistoryURL" x-show="manualUpdate">
+                <button type="submit" class="button" :disabled="requestInProgress || (manualUpdate && warpHistoryURL.length == 0)">
+                    <svg id="spinner" viewBox="0 0 10 10" x-show="requestInProgress">
+                        <path d="M5,0C2.239,0 0,2.239 0,5C0,7.76 2.24,10 5,10C7.761,10 10,7.761 10,5L8,5C8,6.657 6.657,8 5,8C3.344,8 2,6.656 2,5C2,3.343 3.343,2 5,2L5,0Z" />
+                    </svg>
+                    Update warp history
+                </button>
+            </form>
+
+            <div id="message-output" x-text="backendMessage" :class="backendStatus >= 400 ? 'error' : ''"></div>
+        </div>
+
+        <div id="uid-selector" x-show="availableUIDs.length > 1">
+            <label>UID:</label>
+            <div class="select" x-model="selectedUID" x-ref="uidSelector">
+                <div class="fake-select" x-text="selectedUID" @click="toggleUIDSelector($event)"></div>
+                <ul class="fake-select-options" x-ref="uidSelectorOptions" x-show="uidSelectorOpen">
+                    <template x-for="uid in availableUIDs">
+                        <li :class="uid == selectedUID ? 'active' : ''" x-text="uid" @click="selectUID(uid)"></li>
+                    </template>
+                </ul>
+            </div>
+        </div>
+
+        <div id="data-container" class="hidden" x-ref="dataContainer" x-show="dataLoaded && totalWarps > 0">
+            <section id="pity-container">
+                <h2>Current Pity</h2>
+                <div id="current-pity" class="fake-table">
+                    <div class="column">
+                        <div class="header"></div>
+                        <div>4<span class="star">✦</span> Pity</div>
+                        <div>5<span class="star">✦</span> Pity</div>
+                    </div>
+                    <template x-for="banner in pity">
+                        <div class="column">
+                            <div class="header" x-text="banner.name"></div>
+                            <div x-text="banner.pity4"></div>
+                            <div x-text="banner.pity5"></div>
+                        </div>
+                    </template>
+                </div>
+            </section>
+
+            <div id="statistics-container">
+                <section>
+                    <h2>Statistics</h2>
+                    <table id="item-statistics">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Total</th>
+                                <th>Percent</th>
+                                <th><abbr title="Average Pity">Pity ⌀</abbr></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>5<span class="star">✦</span> Characters</td>
+                                <td x-text="statistics?.characters5?.total"></td>
+                                <td class="percent" x-text="statistics?.characters5?.percent"></td>
+                                <td x-text="statistics?.characters5?.averagePity"></td>
+                            </tr>
+                            <tr>
+                                <td>5<span class="star">✦</span> Light Cones</td>
+                                <td x-text="statistics?.lightcones5?.total"></td>
+                                <td class="percent" x-text="statistics?.lightcones5?.percent"></td>
+                                <td x-text="statistics?.lightcones5?.averagePity"></td>
+                            </tr>
+                            <tr>
+                                <td>4<span class="star">✦</span> Characters</td>
+                                <td x-text="statistics?.characters4?.total"></td>
+                                <td class="percent" x-text="statistics?.characters4?.percent"></td>
+                                <td x-text="statistics?.characters4?.averagePity"></td>
+                            </tr>
+                            <tr>
+                                <td>4<span class="star">✦</span> Light Cones</td>
+                                <td x-text="statistics?.lightcones4?.total"></td>
+                                <td class="percent" x-text="statistics?.lightcones4?.percent"></td>
+                                <td x-text="statistics?.lightcones4?.averagePity"></td>
+                            </tr>
+                            <tr>
+                                <td>3<span class="star">✦</span> Light Cones</td>
+                                <td x-text="statistics?.lightcones3?.total"></td>
+                                <td class="percent" x-text="statistics?.lightcones3?.percent"></td>
+                                <td>–</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section>
+                    <h2>Lowest 5<span class="star">✦</span> Pity</h2>
+                    <table id="low-pity-statistics">
+                        <colgroup>
+                            <col class="low-pity-name">
+                            <col class="low-pity-amount">
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>Character/Light Cone</th>
+                                <th>Pity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="reward in lowPity">
+                                <tr>
+                                    <td class="overflow" x-text="reward.name"></td>
+                                    <td x-text="reward.pity"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+
+            <section id="history-container">
+                <header class="flex-header">
+                    <h2>Warp History</h2>
+                    <div><strong>Total Warps:</strong> <span x-text="totalWarps"></span></div>
+                </header>
+                <table id="warp-history">
+                    <colgroup>
+                        <col class="reward-name">
+                        <col class="rarity">
+                        <col class="reward-type">
+                        <col class="banner-name">
+                        <col class="pity">
+                        <col class="datetime">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Character/Light Cone</th>
+                            <th>
+                                Rarity
+                                <button class="settings" @click="toggleColumnSettings($event, 'rarity')">
+                                    <svg class="settings" viewBox="0 0 10 10"><use href="#settings-icon" /></svg>
+                                </button>
+                                <ul class="settings-menu" x-ref="columnSettings_rarity" x-show="columnSettingsOpen.rarity">
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" x-model="columnFilters.rarity._3">
+                                            <span class="checkbox"></span>
+                                            <span class="label star">✦✦✦</span>
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" x-model="columnFilters.rarity._4">
+                                            <span class="checkbox"></span>
+                                            <span class="label star">✦✦✦✦</span>
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" x-model="columnFilters.rarity._5">
+                                            <span class="checkbox"></span>
+                                            <span class="label star">✦✦✦✦✦</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </th>
+                            <th>
+                                Type
+                                <button class="settings" @click="toggleColumnSettings($event, 'type')">
+                                    <svg class="settings" viewBox="0 0 10 10"><use href="#settings-icon" /></svg>
+                                </button>
+                                <ul class="settings-menu" x-ref="columnSettings_type" x-show="columnSettingsOpen.type">
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" x-model="columnFilters.type.Character">
+                                            <span class="checkbox"></span>
+                                            <span class="label">Character</span>
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" x-model="columnFilters.type.Light_Cone">
+                                            <span class="checkbox"></span>
+                                            <span class="label">Light Cone</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </th>
+                            <th>
+                                Banner
+                                <button class="settings" @click="toggleColumnSettings($event, 'bannerType')">
+                                    <svg class="settings" viewBox="0 0 10 10"><use href="#settings-icon" /></svg>
+                                </button>
+                                <ul class="settings-menu" x-ref="columnSettings_bannerType" x-show="columnSettingsOpen.bannerType">
+                                    <template x-for="bannerType in bannerTypesList">
+                                        <li>
+                                            <label>
+                                                <input type="checkbox" checked @change="bannerTypeFilterChange($event, bannerType.key)">
+                                                <span class="checkbox"></span>
+                                                <span class="label" x-text="bannerType.name"></span>
+                                            </label>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </th>
+                            <th>Pity</th>
+                            <th>Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="warp in pagedWarpHistory">
+                            <tr :class="warp.rarity == 5 ? 'rarity-5' : warp.rarity == 4 ? 'rarity-4' : ''">
+                                <td class="overflow"><div x-text="warp.name"></div></td>
+                                <td :class="warp.rarityText.length > 1 ? 'star' : ''"><div x-text="warp.rarityText"></div></td>
+                                <td><div x-text="warp.type"></div></td>
+                                <td><div x-text="warp.bannerTypeName"></div></td>
+                                <td><div x-text="warp.pity || '–'"></div></td>
+                                <td><div x-text="warp.time"></div></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <div id="history-controls">
+                    <button type="button" class="history-button" :disabled="warpHistoryPage == 0" @click="firstPage()">First Page</button>
+                    <button type="button" class="history-button" :disabled="warpHistoryPage == 0" @click="previousPage()">Previous</button>
+                    <div class="page-display">Page <span x-text="warpHistoryPage + 1"></span></div>
+                    <button type="button" class="history-button" :disabled="warpHistoryPage == warpHistoryLastPage" @click="nextPage()">Next</button>
+                    <button type="button" class="history-button" :disabled="warpHistoryPage == warpHistoryLastPage" @click="lastPage()">Last Page</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <a href="https://github.com/Ennea/warp-journal" target="_blank">Warp Journal</a> v<span x-text="VERSION"></span> | Warp Journal is not affiliated with HoYoverse. Honkai: Star Rail is a trademark of HoYoverse.
+    </footer>
+
+    <script src="static/script.js"></script>
+    <script src="static/alpine3.12.1.min.js"></script>
+</body>
+</html>
