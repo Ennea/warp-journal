@@ -34,28 +34,6 @@ Section "Warp Journal"
 
   ; Files to install
   File /r "warp-journal.dist\*.*"
-;  File /r "warp-journal.dist\frontend*.*"
-;  File "warp-journal.dist\icon.png"
-;  File "warp-journal.dist\warp-journal.exe"
-;
-;  File /r "warp-journal.dist\tcl*.*"
-;  File /r "warp-journal.dist\tk*.*"
-;  File "warp-journal.dist\libcrypto-1_1.dll"
-;  File "warp-journal.dist\libssl-1_1.dll"
-;  File "warp-journal.dist\python310.dll"
-;  File "warp-journal.dist\vcruntime140.dll"
-;  File "warp-journal.dist\tcl86t.dll"
-;  File "warp-journal.dist\tk86t.dll"
-;  File "warp-journal.dist\sqlite3.dll"
-;  File "warp-journal.dist\_bz2.pyd"
-;  File "warp-journal.dist\_hashlib.pyd"
-;  File "warp-journal.dist\_lzma.pyd"
-;  File "warp-journal.dist\_socket.pyd"
-;  File "warp-journal.dist\_ssl.pyd"
-;  File "warp-journal.dist\_tkinter.pyd"
-;  File "warp-journal.dist\_sqlite3.pyd"
-;  File "warp-journal.dist\select.pyd"
-;  File "warp-journal.dist\unicodedata.pyd"
 
   ; Write the installation path into the registry
   WriteRegStr HKLM "Software\WarpJournal" "InstallDir" "$INSTDIR"

@@ -68,7 +68,7 @@ def get_cache_path():
         logging.debug('game path not found in output_log')
         return None
 
-    # create a copy of the file so we can also access it while genshin is running.
+    # create a copy of the file so we can also access it while star rail is running.
     # python cannot do this without raising an error, and neither can the default
     # windows copy command, so we instead delegate this task to powershell's Copy-Item
     try:
