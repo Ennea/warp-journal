@@ -1,0 +1,25 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "warp-journal"
+version = "1.1.0"
+description = "Honkai: Star Rail gacha tracker and analysis."
+authors = ["Ennea"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "warp_journal"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+bottle = "^0.12.25"
+gevent = "^22.10.2"
+gevent-websocket = "^0.10.1"
+greenlet = "^2.0.2"
+"zope.event" = "^4.6"
+"zope.interface" = "^6.0"
+
+[tool.poetry.scripts]
+warp-journal = 'warp_journal.__main__:main'
