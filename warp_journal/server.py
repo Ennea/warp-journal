@@ -1,4 +1,5 @@
 import webbrowser
+from collections import defaultdict
 from copy import deepcopy
 from pathlib import Path
 
@@ -171,11 +172,16 @@ class Server:
             low_pity.sort(key=lambda reward: reward['pity'])
             data['lowPity'] = low_pity[:5]
 
-            # re-sort the history now that all banner types are
-            # merged, then reverse it for display in the frontend
+            # re-sort the history now that all banner types are merged,
+            # replace 'id' with an incremental counter,
+            # add a per-banner counter,
+            # and then reverse it for display in the frontend
             warp_history.sort(key=lambda warp: warp['id'])
-            for warp in warp_history:
-                del warp['id']
+            counts = defaultdict(int)
+            for i, warp in enumerate(warp_history):
+                warp['id'] = i
+                counts[warp['bannerTypeName']] += 1
+                warp['numOnBanner'] = counts[warp['bannerTypeName']]
             warp_history.reverse()
 
             data['totalWarps'] = len(warp_history)

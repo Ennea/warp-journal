@@ -167,6 +167,7 @@
                 </header>
                 <table id="warp-history">
                     <colgroup>
+                        <col class="warp-no" width="100">
                         <col class="reward-name">
                         <col class="rarity">
                         <col class="reward-type">
@@ -176,7 +177,10 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Character/Light Cone</th>
+                            <th>
+                                <abbr title="warp number per banner">Warp №</abbr>
+                            </th>
+                            <th class="align-left">Character/Light Cone</th>
                             <th>
                                 Rarity
                                 <button class="settings" @click="toggleColumnSettings($event, 'rarity')">
@@ -252,7 +256,8 @@
                     <tbody>
                         <template x-for="warp in pagedWarpHistory">
                             <tr :class="warp.rarity == 5 ? 'rarity-5' : warp.rarity == 4 ? 'rarity-4' : ''">
-                                <td class="overflow"><div x-text="warp.name"></div></td>
+                                <td><div x-text="warp.numOnBanner"></div></td>
+                                <td class="overflow align-left"><div x-text="warp.name"></div></td>
                                 <td :class="warp.rarityText.length > 1 ? 'star' : ''"><div x-text="warp.rarityText"></div></td>
                                 <td><div x-text="warp.type"></div></td>
                                 <td><div x-text="warp.bannerTypeName"></div></td>
