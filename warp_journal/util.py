@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import re
@@ -39,39 +40,14 @@ def get_data_path():
     return path
 
 def get_cache_path():
-    game_path = None
-    try:
-        game_path = Path(os.environ['GAME_PATH'])
-    except KeyError:
-        game_path = None
-
-        try:
-            log_path = Path(os.environ['USERPROFILE']) / 'AppData/LocalLow/Cognosphere/Star Rail/Player.log'
-        except KeyError:
-            logging.debug('USERPROFILE environment variable does not exist')
-            return None
-
-        if not log_path.exists():
-            logging.debug('Player.log not found')
-            return None
-
-        regex = re.compile('Loading player data from (.+)/Games/StarRail_Data/data.unity3d')
-        with log_path.open('r') as fp:
-            for line in fp:
-                match = regex.search(line)
-                if match is not None:
-                    game_path = match.group(1)
-                    break
-
-    if game_path is None:
-        logging.debug('game path not found in output_log')
+    if not (game_path := get_game_path()):
         return None
 
     # create a copy of the file so we can also access it while star rail is running.
     # python cannot do this without raising an error, and neither can the default
     # windows copy command, so we instead delegate this task to powershell's Copy-Item
     try:
-        path = Path(game_path) / 'Games/StarRail_Data/webCaches/2.14.0.0/Cache/Cache_Data/data_2'
+        path = game_path / 'StarRail_Data/webCaches/2.14.0.0/Cache/Cache_Data/data_2'
         logging.debug('cache path is: ' + str(path))
         if not path.exists():
             logging.debug('cache file does not exist')
@@ -87,6 +63,70 @@ def get_cache_path():
         return None
 
     return copy_path
+
+def get_game_path():
+    """Retrieve the "game path".
+
+    The "game path" is the one where the game data is put
+    and not the folder of the launcher,
+    which is the 'Games' subfolder on Windows.
+    Since a custom launcher is generally used on Linux,
+    the outer launcher folder doesn't exist there.
+    """
+    if 'GAME_PATH' in os.environ:
+        # Allow some leeway for the envvar override
+        game_path = Path(os.environ['GAME_PATH'])
+        sub_path = game_path / 'Games'
+        return sub_path if sub_path.exists() else game_path
+    elif sys.platform == 'win32':
+        return get_game_path_windows()
+    elif sys.platform == 'linux':
+        return get_game_path_linux()
+    else:
+        return None
+
+def get_game_path_windows():
+    if 'USERPROFILE' not in os.environ:
+        logging.debug('USERPROFILE environment variable does not exist')
+        return None
+
+    log_path = Path(os.environ['USERPROFILE']) / 'AppData/LocalLow/Cognosphere/Star Rail/Player.log'
+    if not log_path.exists():
+        logging.debug('Player.log not found')
+        return None
+
+    regex = re.compile('Loading player data from (.+)/StarRail_Data/data.unity3d')
+    with log_path.open() as fp:
+        for line in fp:
+            match = regex.search(line)
+            if match is not None:
+                return match.group(1)
+
+    logging.debug('game path not found in output_log')
+    return None
+
+def get_game_path_linux():
+    """Try to determine game folder from launcher configuration."""
+    hsr_config_path = Path('~/.local/share/honkers-railway-launcher/config.json').expanduser()
+    if not hsr_config_path.exists():
+        logging.debug('launcher configuration not found')
+        return None
+
+    with hsr_config_path.open() as fp:
+        config = json.load(fp)
+
+    try:
+        global_path = Path(config['game']['path']['global'])
+        if global_path.exists():
+            return global_path
+        china_path = Path(config['game']['path']['china'])
+        if china_path.exists():
+            return china_path
+    except KeyError:
+        pass
+
+    logging.debug('game folder configuration in launcher could not be found')
+    return None
 
 def set_up_logging():
     log_level = logging.DEBUG if 'DEBUG' in os.environ else logging.INFO
