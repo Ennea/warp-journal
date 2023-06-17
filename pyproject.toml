@@ -12,7 +12,7 @@ readme = "README.md"
 packages = [{include = "warp_journal"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.8.1"
 
 bottle = "^0.12.25"
 gevent = "^22.10.2"
@@ -23,3 +23,7 @@ greenlet = "^2.0.2"
 
 [tool.poetry.scripts]
 warp-journal = 'warp_journal.__main__:main'
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^6.0.0"
+
