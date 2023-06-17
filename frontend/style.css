@@ -3,16 +3,16 @@
 }
 
 *::selection {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: hsla(0, 0%, 100%, 0.25);
 }
 
 :root {
-    --fg: #f0f0e0;
-    --bg: #000818;
-    --yellow: #ffd45f;
-    --yellow-dark: #fab216;
-    --yellow-transparent: rgba(255, 212, 95, 0.5);
-    --yellow-dark-transparent: rgba(250, 178, 22, 0.5);
+    --fg: hsl(60, 35%, 90%);
+    --bg: #000818; /* color-picked from background.png */
+    --yellow: hsl(45, 100%, 70%);
+    --yellow-dark: hsl(40, 95%, 50%);
+    --yellow-transparent: hsla(45, 100%, 70%, .5);
+    --yellow-dark-transparent: hsla(40, 95%, 50%, .5);
 }
 
 * {
@@ -46,8 +46,9 @@ html {
 body {
     margin: 0;
     min-height: 100vh;
-    background-color: #000818;
-    background-image: linear-gradient(to bottom, #241028 10px, #141028 200px, #000818 900px);
+    background-color: var(--bg);
+    /* Use a background image with noise to work around banding issues in FireFox. */
+    /*background-image: linear-gradient(to bottom, hsl(290, 43%, 11%) 10px, hsl(250, 43%, 11%) 200px,  900px);*/
     background-image: url('background.png');
     background-repeat: repeat-x;
 }
@@ -80,7 +81,11 @@ h1 {
     color: white;
     text-shadow: none;
     font-size: 2.5rem;
-    text-shadow: -5px 0 #ffffff40, 5px 0 #ffffff40, -10px 0 #ffffff20, 10px 0 #ffffff20;
+    text-shadow:
+         -5px 0 hsla(0, 0%, 100%, 0.25),
+          5px 0 hsla(0, 0%, 100%, 0.25),
+        -10px 0 hsla(0, 0%, 100%, 0.125),
+         10px 0 hsla(0, 0%, 100%, 0.125);
 }
 
 h2, h3 {
@@ -112,10 +117,10 @@ p:last-child {
 button.button, a.update {
     padding: 5px 50px;
     font-size: 1rem;
-    color: var(--bg, black);
+    color: var(--bg);
     border: 3px solid transparent;
     border-radius: 50px;
-    background-color: var(--fg, #f0f0e0);
+    background-color: var(--fg);
     cursor: pointer;
     transition: color 100ms ease-out, background-color 100ms ease-out;
 }
@@ -173,7 +178,7 @@ a.update:focus-visible {
 }
 
 #message-output.error {
-    color: #df2d32;
+    color: hsl(0, 75%, 50%);
 }
 
 /* loading spinner */
@@ -280,12 +285,12 @@ ul.settings-menu {
     text-shadow: none;
     text-align: left;
     border-radius: 15px;
-    background-color: #313c52f0;
+    background-color: hsla(220, 25%, 25%, .95);
     box-shadow:
-        0 1px 1px rgba(0, 0, 0, 0.1),
-        0 3px 3px rgba(0, 0, 0, 0.1),
-        0 6px 6px rgba(0, 0, 0, 0.1),
-        0 12px 12px rgba(0, 0, 0, 0.1);
+        0  1px  1px hsla(0, 0%, 0%, 0.1),
+        0  3px  3px hsla(0, 0%, 0%, 0.1),
+        0  6px  6px hsla(0, 0%, 0%, 0.1),
+        0 12px 12px hsla(0, 0%, 0%, 0.1);
 }
 
 ul.settings-menu::after {
@@ -298,7 +303,7 @@ ul.settings-menu::after {
     border-top: none;
     border-left: var(--size) solid transparent;
     border-right: var(--size) solid transparent;
-    border-bottom: var(--size) solid #313c52f0;
+    border-bottom: var(--size) solid hsla(220, 25%, 25%, 0.95);
 }
 
 ul.settings-menu label {
@@ -331,11 +336,11 @@ ul.settings-menu label > span.checkbox, label.checkbox > span.checkbox {
 }
 
 ul.settings-menu label:hover > span.checkbox, label.checkbox:hover > span.checkbox {
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.75);
+    box-shadow: inset 0 0 10px hsla(0, 0%, 100%, .75);
 }
 
 ul.settings-menu label:hover > span.label, label.checkbox:hover > span.label {
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.75);
+    text-shadow: 0 0 10px hsla(0, 0%, 100%, .75);
 }
 
 ul.settings-menu label > input:checked + span.checkbox::before, label.checkbox > input:checked + span.checkbox::before {
@@ -395,7 +400,7 @@ ul.settings-menu li + li {
     color: inherit;
     border: 2px solid var(--fg);
     border-radius: 50px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: hsla(0, 0%, 0%, 0.5);
     transition: border-color 100ms ease-out;
 }
 
@@ -438,8 +443,8 @@ ul.settings-menu li + li {
     width: 100%;
     list-style-type: none;
     border-radius: 15px;
-    background: rgba(0, 0, 0, 0.85);
-    background-color: #313c52f0;
+    background: hsla(0, 0%, 0%, 0.85);
+    background-color: hsla(220, 25%, 25%, .95);
 }
 
 #uid-selector div.select > ul.fake-select-options li {
@@ -447,7 +452,7 @@ ul.settings-menu li + li {
 }
 
 #uid-selector div.select > ul.fake-select-options li.active {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: hsla(0, 0%, 100%, 0.25);
 }
 
 #uid-selector div.select > ul.fake-select-options li:hover {
@@ -532,11 +537,11 @@ col.datetime { width: 210px; }
 }
 
 #warp-history tr.rarity-4 > td > div {
-    background-color: rgba(107, 82, 152, 0.5);
+    background-color: hsla(260, 30%, 45%, .5);
 }
 
 #warp-history tr.rarity-5 > td > div {
-    background-color: rgba(133, 81, 33, 0.5);
+    background-color: hsla(30, 60%, 32%, .5);
 }
 
 #warp-history td:first-child,
@@ -582,7 +587,7 @@ button.history-button {
     font-size: 1rem;
     color: inherit;
     text-shadow: inherit;
-    border: 3px solid #f0f0e0c0;
+    border: 3px solid hsla(60, 35%, 90%, .75);
     border-radius: 50px;
     background: none;
     cursor: pointer;
@@ -623,7 +628,7 @@ button.history-button:not(:disabled):focus-visible {
     color: inherit;
     border: 3px solid var(--fg);
     border-radius: 50px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: hsla(0, 0%, 0%, 0.5);
 }
 
 .input-container > input::placeholder {
@@ -691,10 +696,10 @@ button.history-button:not(:disabled):focus-visible {
     width: var(--size);
     height: var(--size);
     border-radius: 100%;
-    background-color: #fff8d0;
+    background-color: hsl(51, 100%, 90%);
 }
 
 .bg-star.s1 { --size: 1px; opacity: 0.6; }
 .bg-star.s2 { --size: 2px; opacity: 0.7; }
 .bg-star.s3 { --size: 3px; opacity: 0.8; }
-.bg-star.s4 { --size: 4px; box-shadow: 0 0 5px 1px #ffffff80; }
+.bg-star.s4 { --size: 4px; box-shadow: 0 0 5px 1px hsla(0, 0%, 100%, .5); }
