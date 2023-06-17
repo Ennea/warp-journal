@@ -20,7 +20,6 @@
 }
 
 html {
-    margin-left: calc(100vw - 100%);
     font-size: 18px;
     color: var(--fg);
     text-shadow:
