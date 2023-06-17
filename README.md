@@ -46,7 +46,11 @@ Chinese accounts are not currently supported. If there's enough interest for thi
 
 ### Are platforms besides Windows supported?
 
-Linux is supported. I suggest creating a virtual environment first via `python3 -m venv .venv`, then activating it via `source .venv/bin/activate`. Then install all requirements via `pip install -r requirements.txt`. Then you can launch Warp Journal with `python warp-journal.py`. If you're dual booting Windows, you can even point Warp Journal to the location of the game, so that the automatic extraction of the history URL works on Linux, too. For now, this requires setting the path to the game as an environment variable. For example: `GAME_PATH=/mnt/windows/Users/Ennea/Games/HSR python -m warp_journal`.
+Linux is supported. I suggest creating a virtual environment first via `python3 -m venv .venv`, then activating it via `source .venv/bin/activate`. Then install all requirements via `pip install -r requirements.txt`. Then you can launch Warp Journal with `python warp-journal.py`.
+
+If you're dual booting Windows, you can even point Warp Journal to the location of the game using the `GAME_PATH` environment variable, so that the automatic extraction of the history URL works on Linux, too.
+The path should be to the folder containing `StarRail_Data`.
+For example: `GAME_PATH=/mnt/windows/Users/Ennea/Games/HSR python -m warp_journal`.
 
 If you're not dual booting, you can still manually enter the history URL in Warp Journal's UI.
 
