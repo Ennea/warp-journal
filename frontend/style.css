@@ -495,7 +495,8 @@ col.low-pity-amount { width: 100px; }
 }
 
 /* warp history */
-col.reward-name { width: auto; max-width: calc(100% - 710px);  /* 100% - all other column widths */ }
+col.warp-no { width: 100px; }
+col.reward-name { width: auto; max-width: calc(100% - 810px);  /* 100% - all other column widths */ }
 col.rarity { width: 120px; }
 col.reward-type { width: 120px; }
 col.banner-name { width: 220px; }
@@ -539,20 +540,14 @@ col.datetime { width: 210px; }
     background-color: rgba(133, 81, 33, 0.5);
 }
 
-#warp-history td:first-child,
-#warp-history th:first-child {
-    text-align: left;
+#warp-history td,
+#warp-history th {
+    text-align: center;
 }
 
-#warp-history td:nth-child(2),
-#warp-history td:nth-child(3),
-#warp-history td:nth-child(4),
-#warp-history td:nth-child(5),
-#warp-history th:nth-child(2),
-#warp-history th:nth-child(3),
-#warp-history th:nth-child(4),
-#warp-history th:nth-child(5) {
-    text-align: center;
+#warp-history td.align-left,
+#warp-history th.align-left {
+    text-align: left;
 }
 
 #warp-history td:last-child,
