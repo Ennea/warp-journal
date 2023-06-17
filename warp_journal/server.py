@@ -1,4 +1,3 @@
-import sys
 import webbrowser
 from copy import deepcopy
 from pathlib import Path
@@ -17,7 +16,7 @@ class Server:
     def __init__(self, port):
         self._client = Client()
         self._app = bottle.Bottle()
-        self._frontend_path = Path(sys.path[0]) / 'frontend'
+        self._frontend_path = Path(__file__).parent / 'frontend'
 
         self._app.route('/', callback=self._index)
         self._app.route('/static/<filename>.js', callback=self._static_files_javascript)
