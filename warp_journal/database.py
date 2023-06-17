@@ -110,15 +110,9 @@ class Database:
                 FROM warp_history WHERE uid = ? ORDER BY time ASC
             ''', (uid,)).fetchall()
 
+        keys = [ 'id', 'banner_type', 'type', 'rarity', 'time', 'name' ]
         for warp in warp_history:
-            yield {
-                'id': warp[0],
-                'banner_type': warp[1],
-                'type': warp[2],
-                'rarity': warp[3],
-                'time': warp[4],
-                'name': warp[5]
-            }
+            yield dict(zip(keys, warp))
 
     def get_latest_warp_id(self, uid, banner_type):
         with self._get_database_connection() as db:
