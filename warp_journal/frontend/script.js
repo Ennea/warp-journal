@@ -22,7 +22,7 @@ document.addEventListener('alpine:init', () => {
         uidData: {},
         selectedUID: null,
         bannerTypesList: [],
-        warpHistoryPageSize: 10,
+        warpHistoryPageSize: 50,
         warpHistoryLastPage: 0,
         warpHistoryPage: 0,
         pagedWarpHistory: [],
