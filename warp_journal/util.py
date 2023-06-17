@@ -6,9 +6,7 @@ import shutil
 import socket
 import subprocess
 import sys
-import tkinter
 from pathlib import Path
-from tkinter import ttk
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 
@@ -168,6 +166,11 @@ def get_usable_port():
 
 def show_error(message):
     logging.error(message)
+    try:
+        import tkinter
+        from tkinter import ttk
+    except ImportError:
+        sys.exit(1)
 
     root = tkinter.Tk()
     root.title('Warp Journal')
