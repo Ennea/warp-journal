@@ -39,26 +39,25 @@ def get_cache_path():
     if not (game_path := get_game_path()):
         return None
 
-    # create a copy of the file so we can also access it while star rail is running.
-    # python cannot do this without raising an error, and neither can the default
-    # windows copy command, so we instead delegate this task to powershell's Copy-Item
-    try:
-        path = game_path / 'StarRail_Data/webCaches/2.14.0.0/Cache/Cache_Data/data_2'
-        logging.debug('cache path is: ' + str(path))
-        if not path.exists():
-            logging.debug('cache file does not exist')
-            return None
-
-        copy_path = get_data_path() / 'data_2'
-        if sys.platform == 'win32':
-            subprocess.check_output(f'powershell.exe -Command "Copy-Item \'{path}\' \'{copy_path}\'"', shell=True)
-        else:
-            shutil.copyfile(path, copy_path)
-    except (FileNotFoundError, subprocess.CalledProcessError, OSError):
-        logging.error('Could not create copy of cache file')
+    path = game_path / 'StarRail_Data/webCaches/2.14.0.0/Cache/Cache_Data/data_2'
+    logging.debug('cache path is: ' + str(path))
+    if not path.exists():
+        logging.debug('cache file does not exist')
         return None
 
-    return copy_path
+    if sys.platform == 'win32':
+        # create a copy of the file so we can also access it while star rail is running.
+        # python cannot do this without raising an error, and neither can the default
+        # windows copy command, so we instead delegate this task to powershell's Copy-Item
+        try:
+            copy_path = get_data_path() / 'data_2'
+            subprocess.check_output(f'powershell.exe -Command "Copy-Item \'{path}\' \'{copy_path}\'"', shell=True)
+            return copy_path
+        except (FileNotFoundError, subprocess.CalledProcessError, OSError):
+            logging.error('Could not create copy of cache file')
+            return None
+    else:
+        return path
 
 def get_game_path():
     """Retrieve the "game path".
