@@ -2,7 +2,7 @@ import logging
 import sqlite3
 from shutil import copyfile
 
-from .util import get_data_path, show_error
+from .util import get_data_path, panic
 from .enums import ItemType
 
 
@@ -44,7 +44,7 @@ class Database:
         if not self._database_path.exists():
             self._create_database()
         elif self._database_path.is_dir():
-            show_error(f'{self._database_path} exists, but is not a file.')
+            panic(f'{self._database_path} exists, but is not a file.')
 
         # the database exists, let's check the version of our data
         logging.info('Checking database version')
@@ -52,11 +52,11 @@ class Database:
             try:
                 version = db.cursor.execute('SELECT data FROM meta WHERE name = "version"').fetchall()[0][0]
             except (IndexError, sqlite3.DatabaseError, sqlite3.OperationalError):
-                show_error('Could not find version information in the database. The database might be corrupt.')
+                panic('Could not find version information in the database. The database might be corrupt.')
 
         # exit if the version does not match. in the future, migrate if version is lower
         if version != DATABASE_VERSION:
-            show_error('Unknown database version. Shutting down to not mess with any data.')
+            panic('Unknown database version. Shutting down to not mess with any data.')
 
         # create a backup
         logging.info('Creating database backup')
