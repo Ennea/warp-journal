@@ -56,7 +56,7 @@ def get_cache_path():
             logging.debug('Player.log not found')
             return None
 
-        regex = re.compile('Loading player data from (.+)/Games/StarRail_Data/data.unity3d')
+        regex = re.compile('Loading player data from (.+)/StarRail_Data/data.unity3d')
         with log_path.open('r') as fp:
             for line in fp:
                 match = regex.search(line)
@@ -72,7 +72,7 @@ def get_cache_path():
     # python cannot do this without raising an error, and neither can the default
     # windows copy command, so we instead delegate this task to powershell's Copy-Item
     try:
-        path = Path(game_path) / 'Games/StarRail_Data/webCaches/Cache/Cache_Data/data_2'
+        path = Path(game_path) / 'StarRail_Data/webCaches/Cache/Cache_Data/data_2'
         logging.debug('cache path is: ' + str(path))
         if not path.exists():
             logging.debug('cache file does not exist')
