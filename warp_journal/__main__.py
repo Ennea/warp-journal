@@ -13,11 +13,14 @@
 
 import logging
 
-from util import set_up_logging, get_usable_port
-from server import Server
+from .util import set_up_logging, get_usable_port
+from .server import Server
 
+def main():
+    set_up_logging()
+    port = get_usable_port()
+    Server(port)
+    logging.info('Quitting')
 
-set_up_logging()
-port = get_usable_port()
-Server(port)
-logging.info('Quitting')
+if __name__ == '__main__':
+    main()
