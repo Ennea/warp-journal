@@ -6,7 +6,6 @@ import socket
 import subprocess
 import sys
 import tkinter
-import webbrowser
 from pathlib import Path
 from tkinter import ttk
 from urllib.request import urlopen
