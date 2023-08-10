@@ -9,15 +9,18 @@
 #     nuitka-project: --windows-company-name=-
 #     nuitka-project: --windows-product-name=Warp Journal
 #     nuitka-project: --windows-file-description=Warp Journal
-#     nuitka-project: --windows-product-version=1.0.0
+#     nuitka-project: --windows-product-version=1.0.1
 
 import logging
 
-from util import set_up_logging, get_usable_port
-from server import Server
+from .util import set_up_logging, get_usable_port
+from .server import Server
 
+def main():
+    set_up_logging()
+    port = get_usable_port()
+    Server(port)
+    logging.info('Quitting')
 
-set_up_logging()
-port = get_usable_port()
-Server(port)
-logging.info('Quitting')
+if __name__ == '__main__':
+    main()

@@ -2,7 +2,7 @@
 !define MUI_ICON "icon.ico"
 
 Name "Warp Journal"
-OutFile "warp-journal-1.0.0.exe"
+OutFile "warp-journal-1.0.1.exe"
 Unicode True
 RequestExecutionLevel admin
 InstallDir "$PROGRAMFILES\Warp Journal"
