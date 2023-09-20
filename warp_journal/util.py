@@ -39,7 +39,12 @@ def get_cache_path():
     if not (game_path := get_game_path()):
         return None
 
-    path = game_path / 'StarRail_Data/webCaches/2.14.0.0/Cache/Cache_Data/data_2'
+    web_cache_path = get_web_cache_path(game_path)
+    if not web_cache_path:
+        logging.debug('could not find latest webCaches subfolder')
+        return None
+
+    path = web_cache_path / 'Cache/Cache_Data/data_2'
     logging.debug('cache path is: ' + str(path))
     if not path.exists():
         logging.debug('cache file does not exist')
@@ -122,6 +127,19 @@ def get_game_path_linux():
 
     logging.debug('game folder configuration in launcher could not be found')
     return None
+
+def get_web_cache_path(game_path):
+    web_caches = game_path / 'StarRail_Data/webCaches/'
+    versions = [
+        (parts, p)
+        for p in web_caches.iterdir()
+        if p.is_dir() and len(parts := p.name.split('.')) > 1
+    ]
+    if not versions:
+        return None
+    versions.sort()
+    return versions[-1][1]
+
 
 def set_up_logging():
     log_level = logging.DEBUG if 'DEBUG' in os.environ else logging.INFO
