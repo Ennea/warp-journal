@@ -1,3 +1,4 @@
+import logging
 import webbrowser
 from collections import defaultdict
 from copy import deepcopy
@@ -204,9 +205,11 @@ class Server:
                 region, auth_token = Client.extract_region_and_auth_token_from_file()
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
+            logging.warning('Unable to extract auth token: %s', e)
             return {
                 'message': str(e)
             }
+        logging.debug('Extracted region and token: %s; %s', region, auth_token)
 
         self._client.set_region_and_auth_token(region, auth_token)
         try:

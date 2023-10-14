@@ -10,7 +10,7 @@ from urllib.parse import urlparse, urlencode, parse_qs
 from .enums import ItemType
 from .exceptions import AuthTokenExtractionError, LogNotFoundError, MissingAuthTokenError, EndpointError, RequestError, UnsupportedRegion
 from .database import Database
-from .util import get_cache_path
+from .paths import get_cache_path
 
 
 class Client:
@@ -164,8 +164,9 @@ class Client:
             cache_file = fp.read()
 
         url = None
-        regex = re.compile(b'(https://webstatic-sea.hoyoverse.com/hkrpg/event/.+?)\0')
+        regex = re.compile(rb'https://[^\0]+/getGachaLog[^\0]*')
         matches = regex.findall(cache_file)
+        logging.debug('Found %d matches for getGachaLog URLs', len(matches))
         if len(matches) > 0:
             url = matches[-1].decode('utf-8')
 
