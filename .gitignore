@@ -2,3 +2,6 @@
 __pycache__/
 icon/
 dist/
+
+# Only contain settings specific to tha local environment.
+poetry.toml

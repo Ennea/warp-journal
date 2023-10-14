@@ -11,6 +11,9 @@ license = "MIT"
 readme = "README.md"
 packages = [{include = "warp_journal"}]
 
+[tool.poetry.scripts]
+warp-journal = 'warp_journal.__main__:main'
+
 [tool.poetry.dependencies]
 python = "^3.8.1"
 
@@ -21,9 +24,19 @@ greenlet = "^2.0.2"
 "zope.event" = "^4.6"
 "zope.interface" = "^6.0"
 
-[tool.poetry.scripts]
-warp-journal = 'warp_journal.__main__:main'
-
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
 
+[tool.pyright]
+defineConstant = { DEBUG = true }
+
+reportMissingTypeStubs = "information"
+reportImportCycles = "warning"
+
+pythonVersion = "3.8"
+pythonPlatform = "All"
+
+# Note: If you're using a non-standard path for your virtual environment,
+# which is the default configuraation for poetry, you need to tell pyright where it can be found.
+# Alternatively, you can tell poetry to use a virtual env inside the project folder:
+# `poetry config --local virtualenvs.in-project true`
