@@ -10,7 +10,7 @@ from urllib.parse import urlparse, urlencode, parse_qs
 from .enums import ItemType
 from .exceptions import AuthTokenExtractionError, LogNotFoundError, MissingAuthTokenError, EndpointError, RequestError, UnsupportedRegion
 from .database import Database
-from .util import get_cache_path
+from .paths import get_cache_path
 
 
 class Client:
