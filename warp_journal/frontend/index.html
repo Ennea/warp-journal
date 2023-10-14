@@ -16,6 +16,9 @@
             <path d="m5.5 8.5a1.5 1.5 0 0 1-1.5 1.5 1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 1 1.5-1.5 1.5 1.5 0 0 1 1.5 1.5z"/>
             <path d="m9 5a1.5 1.5 0 0 1-1.5 1.5 1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 1 1.5-1.5 1.5 1.5 0 0 1 1.5 1.5z"/>
         </g>
+        <g id="spinner-icon">
+            <path d="M5,0C2.239,0 0,2.239 0,5C0,7.76 2.24,10 5,10C7.761,10 10,7.761 10,5L8,5C8,6.657 6.657,8 5,8C3.344,8 2,6.656 2,5C2,3.343 3.343,2 5,2L5,0Z" />
+        </g>
     </svg>
 
     <div id="bg-stars">
@@ -46,11 +49,15 @@
 
             <form class="input-container" @submit="updateWarps($event)">
                 <input type="text" placeholder="Warp history URL" x-model="warpHistoryURL" x-show="manualUpdate">
+
                 <button type="submit" class="button" :disabled="requestInProgress || (manualUpdate && warpHistoryURL.length == 0)">
-                    <svg id="spinner" viewBox="0 0 10 10" x-show="requestInProgress">
-                        <path d="M5,0C2.239,0 0,2.239 0,5C0,7.76 2.24,10 5,10C7.761,10 10,7.761 10,5L8,5C8,6.657 6.657,8 5,8C3.344,8 2,6.656 2,5C2,3.343 3.343,2 5,2L5,0Z" />
-                    </svg>
+                    <svg class="spinner" viewBox="0 0 10 10" x-show="requestInProgress"><use href="#spinner-icon" /></svg>
                     Update warp history
+                </button>
+
+                <button class="button" :disabled="requestInProgress" x-show="!manualUpdate" @click="copyWarpsUrl($event)">
+                    <svg class="spinner" viewBox="0 0 10 10" x-show="requestInProgress"><use href="#spinner-icon" /></svg>
+                    Copy warp history URL
                 </button>
             </form>
 

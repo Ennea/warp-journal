@@ -1,16 +1,14 @@
 import json
 import logging
-import re
 from json.decoder import JSONDecodeError
 from time import sleep
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
-from urllib.parse import urlparse, urlencode, parse_qs
+from urllib.parse import urlencode
 
 from .enums import ItemType
-from .exceptions import AuthTokenExtractionError, LogNotFoundError, MissingAuthTokenError, EndpointError, RequestError, UnsupportedRegion
+from .exceptions import MissingAuthTokenError, EndpointError, RequestError, UnsupportedRegion
 from .database import Database
-from .paths import get_cache_path
 
 
 class Client:
@@ -138,40 +136,3 @@ class Client:
 
     def get_warp_history(self, uid):
         return self._database.get_warp_history(uid)
-
-    @staticmethod
-    def extract_region_and_auth_token(url):
-        try:
-            url = urlparse(url)
-        except ValueError:
-            raise AuthTokenExtractionError('Error parsing URL.')
-
-        query_params = parse_qs(url.query)
-        if 'authkey' not in query_params:
-            raise AuthTokenExtractionError('Parameter "authkey" missing from URL.')
-        if 'game_biz' not in query_params:
-            raise AuthTokenExtractionError('Parameter "game_biz" missing from URL.')
-
-        return (query_params['game_biz'][0], query_params['authkey'][0])
-
-    @staticmethod
-    def extract_region_and_auth_token_from_file():
-        path = get_cache_path()
-        if path is None or not path.exists():
-            raise LogNotFoundError('Honkai: Star Rail is not installed or has not been started yet, or the cache file could not be copied.')
-
-        with path.open('rb') as fp:
-            cache_file = fp.read()
-
-        url = None
-        regex = re.compile(rb'https://[^\0]+/getGachaLog[^\0]*')
-        matches = regex.findall(cache_file)
-        logging.debug('Found %d matches for getGachaLog URLs', len(matches))
-        if len(matches) > 0:
-            url = matches[-1].decode('utf-8')
-
-        if url is None:
-            raise AuthTokenExtractionError('Could not find authentication token in the log file. Open the warp history in the game, then try again.')
-
-        region, auth_token = Client.extract_region_and_auth_token(url)
-        return (region, auth_token)

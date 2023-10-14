@@ -1,4 +1,5 @@
 import logging
+from typing import Optional, cast
 import webbrowser
 from collections import defaultdict
 from copy import deepcopy
@@ -10,6 +11,7 @@ from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from geventwebsocket import WebSocketError
 
+from . import url_util
 from .client import Client
 from .enums import ItemType
 from .exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
@@ -28,6 +30,7 @@ class Server:
         self._app.route('/warp-journal', callback=self._identify)
         self._app.route('/data', callback=self._get_data)
         self._app.route('/update-warp-history', method='POST', callback=self._update_warp_history)
+        self._app.route('/find-warp-history-url', method='POST', callback=self._find_warp_history_url)
 
         self._server = WSGIServer(('localhost', port), self._app, handler_class=WebSocketHandler)
         webbrowser.open(f'http://localhost:{port}')
@@ -197,20 +200,18 @@ class Server:
         }
 
     def _update_warp_history(self):
-        body = bottle.request.json
+        body = cast(Optional[dict], bottle.request.json)
+        url = body.get('url') if body else None
         try:
-            if 'url' in body:
-                region, auth_token = Client.extract_region_and_auth_token(body['url'])
-            else:
-                region, auth_token = Client.extract_region_and_auth_token_from_file()
+            if not url:
+                url = url_util.find_gacha_url()
+            region, auth_token = url_util.extract_region_and_auth_token(url)
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
             logging.warning('Unable to extract auth token: %s', e)
-            return {
-                'message': str(e)
-            }
-        logging.debug('Extracted region and token: %s; %s', region, auth_token)
+            return {'message': str(e)}
 
+        logging.debug('Extracted region and token: %s; %s', region, auth_token)
         self._client.set_region_and_auth_token(region, auth_token)
         try:
             new_warps_count = self._client.fetch_and_store_warp_history()
@@ -223,3 +224,14 @@ class Server:
         return {
             'message': f'Retrieved {new_warps_count} new {"warp" if new_warps_count == 1 else "warps"}.'
         }
+
+    def _find_warp_history_url(self):
+        try:
+            url = url_util.find_gacha_url()
+            url_util.extract_region_and_auth_token(url)
+        except (AuthTokenExtractionError, LogNotFoundError) as e:
+            bottle.response.status = 400
+            logging.warning('Unable to extract auth token: %s', e)
+            return {'message': str(e)}
+
+        return {'url': url}

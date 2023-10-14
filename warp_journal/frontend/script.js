@@ -174,47 +174,77 @@ document.addEventListener('alpine:init', () => {
             });
         },
 
-        updateWarps(event) {
+        async updateWarps(event) {
             if (event) {
                 event.preventDefault();
             }
-
-            // reset message and status, show loading animation
-            this.backendStatus = 0;
-            this.backendMessage = '';
-            this.requestInProgress = true;
 
             const body = {};
             if (this.manualUpdate) {
                 body.url = this.warpHistoryURL;
             }
 
-            fetch('/update-warp-history', {
+            const response = await this.doJsonRequest(fetch('/update-warp-history', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(body)
-            }).then((response) => {
-                return new Promise((resolve, reject) => {
-                    response.json().then((json) => {
-                        resolve({
-                            status: response.status,
-                            data: json
-                        });
-                    });
+            }));
+            if (!response) {
+                return;
+            }
+
+            const json = await response.json();
+            this.backendStatus = response.status;
+            this.backendMessage = json?.message ?? 'An unknown error has occurred.';
+            this.loadData();
+        },
+
+        async copyWarpsUrl(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
+            const response = await this.doJsonRequest(fetch('/find-warp-history-url', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            }));
+            if (!response) {
+                return;
+            }
+
+            const json = await response.json();
+            this.backendStatus = response.status;
+            this.backendMessage = json?.message ?? '';
+            if (json.url) {
+                navigator.clipboard.writeText(json.url);
+                this.backendMessage = 'URL copied.';
+            }
+        },
+
+        async doJsonRequest(request) {
+            this.backendStatus = 0;
+            this.backendMessage = '';
+            this.requestInProgress = true;
+
+            try {
+                return await fetch('/find-warp-history-url', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                 });
-            }, (error) => {
+            } catch (error) {
                 this.backendStatus = 400;
                 this.backendMessage = 'Connection failed. Try restarting Warp Journal.';
-                throw error;
-            }).then((json) => {
-                this.backendStatus = json.status;
-                this.backendMessage = json.data?.message || 'An unknown error has occurred.';
-                this.loadData();
-            }).finally(() => {
+                console.error(error);
+                return null;
+            } finally {
                 this.requestInProgress = false;
-            });
+            }
         },
 
         // page and filter the warp history for display
