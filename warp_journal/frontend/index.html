@@ -270,7 +270,9 @@
                 <div id="history-controls">
                     <button type="button" class="history-button" :disabled="warpHistoryPage == 0" @click="firstPage()">First Page</button>
                     <button type="button" class="history-button" :disabled="warpHistoryPage == 0" @click="previousPage()">Previous</button>
-                    <div class="page-display">Page <span x-text="warpHistoryPage + 1"></span></div>
+                    <div class="page-display">
+                        Page <span x-text="warpHistoryPage + 1"></span> / <span x-text="warpHistoryLastPage + 1"></span>
+                    </div>
                     <button type="button" class="history-button" :disabled="warpHistoryPage == warpHistoryLastPage" @click="nextPage()">Next</button>
                     <button type="button" class="history-button" :disabled="warpHistoryPage == warpHistoryLastPage" @click="lastPage()">Last Page</button>
                 </div>

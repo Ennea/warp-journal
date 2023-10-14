@@ -52,7 +52,7 @@ Then you can launch Warp Journal with `poetry run warp-journal`.
 
 If you're dual-booting Windows, you can even point Warp Journal to the location of the game using the `GAME_PATH` environment variable, so that the automatic extraction of the history URL works on Linux, too.
 The path should be to the folder containing `StarRail_Data`.
-For example: `GAME_PATH=/mnt/windows/Users/Ennea/Games/HSR python -m warp_journal`.
+For example: `GAME_PATH=/mnt/windows/Users/Ennea/Games/HSR poetry run warp-journal`.
 
 If you're not dual-booting, you can still manually enter the history URL in Warp Journal's UI.
 

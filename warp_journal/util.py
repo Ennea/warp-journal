@@ -6,9 +6,7 @@ import shutil
 import socket
 import subprocess
 import sys
-import tkinter
 from pathlib import Path
-from tkinter import ttk
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 
@@ -27,15 +25,13 @@ def get_data_path():
         else:
             path = Path('~/Library/Application Support/warp-journal').expanduser()
     else:
-        show_error('Warp Journal is only designed to run on Windows or Linux based systems.')
+        panic('Warp Journal is only designed to run on Windows or Linux-based systems.')
 
-    # create dir if it does not yet exist
-    if not path.exists():
-        path.mkdir(parents=True)
-
-    # path exists, but is a file
-    if not path.is_dir():
-        show_error(f'{path} already exists, but is a file.')
+    # ensure dir exists
+    try:
+        path.mkdir(parents=True, exist_ok=True)
+    except FileExistsError:
+        panic(f'{path} already exists, but is a file.')
 
     return path
 
@@ -43,26 +39,25 @@ def get_cache_path():
     if not (game_path := get_game_path()):
         return None
 
-    # create a copy of the file so we can also access it while star rail is running.
-    # python cannot do this without raising an error, and neither can the default
-    # windows copy command, so we instead delegate this task to powershell's Copy-Item
-    try:
-        path = game_path / 'StarRail_Data/webCaches/2.14.0.0/Cache/Cache_Data/data_2'
-        logging.debug('cache path is: ' + str(path))
-        if not path.exists():
-            logging.debug('cache file does not exist')
-            return None
-
-        copy_path = get_data_path() / 'data_2'
-        if sys.platform == 'win32':
-            subprocess.check_output(f'powershell.exe -Command "Copy-Item \'{path}\' \'{copy_path}\'"', shell=True)
-        else:
-            shutil.copyfile(path, copy_path)
-    except (FileNotFoundError, subprocess.CalledProcessError, OSError):
-        logging.error('Could not create copy of cache file')
+    path = game_path / 'StarRail_Data/webCaches/2.14.0.0/Cache/Cache_Data/data_2'
+    logging.debug('cache path is: ' + str(path))
+    if not path.exists():
+        logging.debug('cache file does not exist')
         return None
 
-    return copy_path
+    if sys.platform == 'win32':
+        # create a copy of the file so we can also access it while star rail is running.
+        # python cannot do this without raising an error, and neither can the default
+        # windows copy command, so we instead delegate this task to powershell's Copy-Item
+        try:
+            copy_path = get_data_path() / 'data_2'
+            subprocess.check_output(f'powershell.exe -Command "Copy-Item \'{path}\' \'{copy_path}\'"', shell=True)
+            return copy_path
+        except (FileNotFoundError, subprocess.CalledProcessError, OSError):
+            logging.error('Could not create copy of cache file')
+            return None
+    else:
+        return path
 
 def get_game_path():
     """Retrieve the "game path".
@@ -152,22 +147,31 @@ def is_port_in_use(port):
             return True
 
 def get_usable_port():
-    port = 6193
-    while is_port_in_use(port):
+    for port in range(6193, 6193 + 10):
+        if not is_port_in_use(port):
+            return port
         # check if warp journal is already running on this port
         try:
             with urlopen(f'http://localhost:{port}/warp-journal', timeout=0.1) as _:
-                pass
-            show_error('Warp Journal is already running.')
+                return port
+            panic('Warp Journal is already running.')
         except (URLError, HTTPError):
-            port += 1
-            if port == 6203:
-                show_error('No suitable port found.')
+            continue
 
-    return port
+    panic('No suitable port found.')
 
-def show_error(message):
+def panic(message):
     logging.error(message)
+    show_error_dialog(message)
+    logging.info('Quitting')
+    sys.exit(1)
+
+def show_error_dialog(message):
+    try:
+        import tkinter
+        from tkinter import ttk
+    except ImportError:
+        return
 
     root = tkinter.Tk()
     root.title('Warp Journal')
@@ -189,5 +193,3 @@ def show_error(message):
     root.geometry('+{}+{}'.format(int(screen_width / 2 - window_width / 2), int(screen_height / 2 - window_height / 2)))
 
     root.mainloop()
-    logging.info('Quitting')
-    sys.exit(1)

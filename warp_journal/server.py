@@ -1,6 +1,7 @@
 import webbrowser
 from collections import defaultdict
 from copy import deepcopy
+import os
 from pathlib import Path
 
 import bottle
@@ -55,7 +56,9 @@ class Server:
             try:
                 ws.receive()
             except WebSocketError:
-                self._server.stop()
+                # allow skipping automatic exit when developing on frontend
+                if not os.environ.get('DEVEL'):
+                    self._server.stop()
                 break
 
     # a simple 204 on a fixed endpoint name; used to identify ourselves to check if

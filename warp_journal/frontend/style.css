@@ -20,7 +20,6 @@
 }
 
 html {
-    margin-left: calc(100vw - 100%);
     font-size: 18px;
     color: var(--fg);
     text-shadow:
@@ -30,7 +29,7 @@ html {
         -1px  1px 0 var(--bg),
         -1px  0   0 var(--bg),
         -1px -1px 0 var(--bg),
-        0    -1px 0 var(--bg),
+         0   -1px 0 var(--bg),
          1px -1px 0 var(--bg),
          2px  0   0 var(--bg),
          2px  2px 0 var(--bg),
@@ -38,7 +37,7 @@ html {
         -2px  2px 0 var(--bg),
         -2px  0   0 var(--bg),
         -2px -2px 0 var(--bg),
-        0    -2px 0 var(--bg),
+         0   -2px 0 var(--bg),
          2px -2px 0 var(--bg);
 
 }
