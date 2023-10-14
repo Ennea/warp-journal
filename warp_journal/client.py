@@ -164,8 +164,9 @@ class Client:
             cache_file = fp.read()
 
         url = None
-        regex = re.compile(b'(https://webstatic-sea.hoyoverse.com/hkrpg/event/.+?)\0')
+        regex = re.compile(rb'https://[^\0]+/getGachaLog[^\0]*')
         matches = regex.findall(cache_file)
+        logging.debug('Found %d matches for getGachaLog URLs', len(matches))
         if len(matches) > 0:
             url = matches[-1].decode('utf-8')
 
