@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+
 from .error import panic
 
 def get_data_path():

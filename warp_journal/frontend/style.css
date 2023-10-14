@@ -176,14 +176,14 @@ a.update:focus-visible {
 }
 
 /* loading spinner */
-#spinner {
+.spinner {
     width: 20px;
     height: auto;
     vertical-align: sub;
     animation: spinner 1s linear infinite;
 }
 
-#spinner > path {
+.spinner > path {
     fill: var(--bg);
 }
 
@@ -606,12 +606,10 @@ button.history-button:not(:disabled):focus-visible {
 /* containers */
 .input-container {
     display: flex;
-    justify-content: space-between;
 }
 
 .input-container > input {
     flex-grow: 1;
-    margin-right: 20px;
     padding: 5px 15px;
     font-size: 1rem;
     color: inherit;
@@ -633,6 +631,10 @@ button.history-button:not(:disabled):focus-visible {
 .input-container > button {
     width: 300px;
     padding: 5px 20px;
+}
+
+.input-container > *:not(:last-child) {
+    margin-right: 20px;
 }
 
 #statistics-container {
