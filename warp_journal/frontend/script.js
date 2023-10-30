@@ -231,12 +231,7 @@ document.addEventListener('alpine:init', () => {
             this.requestInProgress = true;
 
             try {
-                return await fetch('/find-warp-history-url', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
+                return await request;
             } catch (error) {
                 this.backendStatus = 400;
                 this.backendMessage = 'Connection failed. Try restarting Warp Journal.';
