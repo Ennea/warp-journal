@@ -40,13 +40,13 @@ class Client:
             with urlopen('{}{}?{}'.format(self.API_BASE_URL, endpoint, urlencode(params))) as request:
                 result = request.read()
         except (URLError, HTTPError) as err:
-            logging.error(err)
+            logging.error("Request error", err)
             raise EndpointError('Error making request.')
 
         try:
             result = json.loads(result)
         except JSONDecodeError as err:
-            logging.error(err)
+            logging.error("Decode error", err)
             raise RequestError('Error parsing request result as JSON.')
 
         if 'retcode' not in result:
@@ -55,7 +55,7 @@ class Client:
 
         if result['retcode'] != 0:
             pretty_message = result['message'][0].upper() + result['message'][1:] + '.'
-            logging.error(pretty_message)
+            logging.error("Endpoint returned message: %s", pretty_message)
             raise EndpointError(pretty_message)
 
         return result['data']
