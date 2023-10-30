@@ -218,10 +218,11 @@ document.addEventListener('alpine:init', () => {
 
             const json = await response.json();
             this.backendStatus = response.status;
-            this.backendMessage = json?.message ?? '';
             if (json.url) {
                 navigator.clipboard.writeText(json.url);
                 this.backendMessage = 'URL copied.';
+            } else {
+                this.backendMessage = json?.message ?? '';
             }
         },
 

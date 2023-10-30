@@ -126,7 +126,7 @@ def get_game_path_linux():
     return None
 
 def get_web_cache_path(game_path):
-    web_caches = game_path / 'StarRail_Data/webCaches/'
+    web_caches = game_path / 'StarRail_Data/webCaches'
     versions = [
         (parts, p)
         for p in web_caches.iterdir()
