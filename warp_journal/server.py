@@ -206,6 +206,7 @@ class Server:
             if not url:
                 url = url_util.find_gacha_url()
             region, auth_token = url_util.extract_region_and_auth_token(url)
+            api_endpoint = url_util.extract_api_endpoint(url)
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
             logging.warning('Unable to extract auth token: %s', e)
@@ -213,6 +214,7 @@ class Server:
 
         logging.debug('Extracted region and token: %s; %s', region, auth_token)
         self._client.set_region_and_auth_token(region, auth_token)
+        self._client.set_api_endpoint(api_endpoint)
         try:
             new_warps_count = self._client.fetch_and_store_warp_history()
         except (MissingAuthTokenError, RequestError, EndpointError, UnsupportedRegion) as e:

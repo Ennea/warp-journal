@@ -43,3 +43,12 @@ def extract_region_and_auth_token(url: str) -> tuple[str, str]:
         raise AuthTokenExtractionError('Parameter "game_biz" missing from URL.')
 
     return (query_params['game_biz'][0], query_params['authkey'][0])
+
+
+def extract_api_endpoint(url: str) -> str:
+    try:
+        parsed_url = urlparse(url)
+    except ValueError:
+        raise AuthTokenExtractionError('Error parsing URL.')
+
+    return '{}://{}{}'.format(parsed_url.scheme, parsed_url.netloc, parsed_url.path)

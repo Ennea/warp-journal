@@ -9,7 +9,7 @@
 #     nuitka-project: --windows-company-name=-
 #     nuitka-project: --windows-product-name=Warp Journal
 #     nuitka-project: --windows-file-description=Warp Journal
-#     nuitka-project: --windows-product-version=1.0.1
+#     nuitka-project: --windows-product-version=1.2.0
 
 import logging
 

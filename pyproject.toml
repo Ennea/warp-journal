@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "warp-journal"
-version = "1.1.0"
+version = "1.2.0"
 description = "Honkai: Star Rail gacha tracker and analysis."
 authors = ["Ennea"]
 license = "MIT"
@@ -15,7 +15,7 @@ packages = [{include = "warp_journal"}]
 warp-journal = 'warp_journal.__main__:main'
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.12.5"
 
 bottle = "^0.12.25"
 gevent = "^22.10.2"
@@ -33,7 +33,7 @@ defineConstant = { DEBUG = true }
 reportMissingTypeStubs = "information"
 reportImportCycles = "warning"
 
-pythonVersion = "3.8"
+pythonVersion = "3.12"
 pythonPlatform = "All"
 
 # Note: If you're using a non-standard path for your virtual environment,

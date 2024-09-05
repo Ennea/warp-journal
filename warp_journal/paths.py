@@ -41,7 +41,7 @@ def get_cache_path():
         logging.debug('could not find latest webCaches subfolder')
         return None
 
-    path = web_cache_path / 'Cache/Cache_Data/data_2'
+    path = Path(web_cache_path) / 'Cache/Cache_Data/data_2'
     logging.debug('cache path is: ' + str(path))
     if not path.exists():
         logging.debug('cache file does not exist')
@@ -52,7 +52,7 @@ def get_cache_path():
         # python cannot do this without raising an error, and neither can the default
         # windows copy command, so we instead delegate this task to powershell's Copy-Item
         try:
-            copy_path = get_data_path() / 'data_2'
+            copy_path = Path(get_data_path()) / 'data_2'
             subprocess.check_output(f'powershell.exe -Command "Copy-Item \'{path}\' \'{copy_path}\'"', shell=True)
             return copy_path
         except (FileNotFoundError, subprocess.CalledProcessError, OSError):
@@ -73,7 +73,7 @@ def get_game_path():
     if 'GAME_PATH' in os.environ:
         # Allow some leeway for the envvar override
         game_path = Path(os.environ['GAME_PATH'])
-        sub_path = game_path / 'Games'
+        sub_path = Path(game_path) / 'Games'
         return sub_path if sub_path.exists() else game_path
     elif sys.platform == 'win32':
         return get_game_path_windows()
@@ -126,7 +126,7 @@ def get_game_path_linux():
     return None
 
 def get_web_cache_path(game_path):
-    web_caches = game_path / 'StarRail_Data/webCaches'
+    web_caches = Path(game_path) / 'StarRail_Data/webCaches'
     versions = [
         (parts, p)
         for p in web_caches.iterdir()
@@ -135,4 +135,6 @@ def get_web_cache_path(game_path):
     if not versions:
         return None
     versions.sort()
+
+    logging.info('Web Cache Version found: %s', '.'.join(versions[-1][0]))
     return versions[-1][1]

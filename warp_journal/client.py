@@ -12,11 +12,10 @@ from .database import Database
 
 
 class Client:
-    API_BASE_URL = 'https://api-os-takumi.mihoyo.com/common/gacha_record/api/'
-
     def __init__(self):
         self._region = None
         self._auth_token = None
+        self._api_endpoint = None
         self._database = Database()
 
     def _request(self, endpoint, extra_params=None):
@@ -35,9 +34,9 @@ class Client:
         if extra_params is not None:
             params = params | extra_params
 
-        logging.info('Requesting endpoint %s', endpoint)
+        url_endpoint = '{}?{}'.format(self._api_endpoint, urlencode(params))
         try:
-            with urlopen('{}{}?{}'.format(self.API_BASE_URL, endpoint, urlencode(params))) as request:
+            with urlopen(url_endpoint) as request:
                 result = request.read()
         except (URLError, HTTPError) as err:
             logging.error("Request error", err)
@@ -96,6 +95,10 @@ class Client:
     def set_region_and_auth_token(self, region, auth_token):
         self._region = region
         self._auth_token = auth_token
+
+    def set_api_endpoint(self, api_endpoint):
+        self._api_endpoint = api_endpoint
+        logging.info('API endpoint: %s', self._api_endpoint)
 
     def get_banner_types(self):
         return {
