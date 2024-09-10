@@ -6,7 +6,6 @@ from json.decoder import JSONDecodeError
 from time import sleep
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
-from urllib.parse import urlencode, urljoin
 
 from .enums import ItemType
 from .exceptions import EndpointError, RequestError, UnsupportedRegion
@@ -15,15 +14,15 @@ from .url_util import GachaUrl
 
 
 class Client:
-    API_BASE_URL = 'https://api-os-takumi.mihoyo.com/common/gacha_record/api'
 
     def __init__(self):
         self._database = Database()
 
-    def _request(self, endpoint: str, params: dict[str, str | int]):
-        logging.info('Requesting endpoint %s', endpoint)
+    def _request(self, url: GachaUrl):
+        logging.info("Requesting endpoint %s%s", url.parsed_url.hostname, url.parsed_url.path)
+        logging.debug("URL: %s", url.url)
         try:
-            with urlopen('{}?{}'.format(endpoint, urlencode(params))) as request:
+            with urlopen(url.url) as request:
                 result = request.read()
         except (URLError, HTTPError) as err:
             logging.error("Request error", err)
@@ -46,28 +45,23 @@ class Client:
 
         return result['data']
 
-    def _fetch_warp_history(self, url: GachaUrl, banner_type: int, end_id=None):
+    def _fetch_warp_history(self, url: GachaUrl, banner_type: int):
         if url.region != 'hkrpg_global':
             raise UnsupportedRegion('Unsupported region.')
 
-        endpoint = urljoin(self.API_BASE_URL, 'getGachaLog')
-        params = {
-            'gacha_type': banner_type,
-            'size': 20,
-            'authkey': url.auth_token,
+        url.parsed_url.params
+        # Note: we will be modifying this in-place
+        query_dict: dict[str, str] = {
+            **url.query_dict,
+            'gacha_type': str(banner_type),
+            'size': '20',
             'lang': 'en',
-            'game_biz': 'hkrpg_global',
-            'authkey_ver': 1,
         }
 
-        if end_id is not None:
-            params['end_id'] = end_id
-
         latest_warp_id = None
-        while result := self._request(endpoint, params):
+        while result := self._request(url._with_query(query_dict)):
             if not result['list']:
                 break
-            end_id = None
             for warp in result['list']:
                 # get the latest warp and store it;
                 # this is the earliest point we can do this, because
@@ -84,9 +78,7 @@ class Client:
                     return
 
                 yield warp
-                end_id = warp['id']
-
-            params['end_id'] = end_id
+            query_dict['end_id'] = str(warp['id'])
             sleep(0.1)  # reasonable delay..?
 
     @staticmethod

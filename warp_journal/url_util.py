@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import re
 from typing import NamedTuple
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import ParseResult, urlencode, urlparse, parse_qs
 
 from .paths import get_cache_path
 from .exceptions import AuthTokenExtractionError, LogNotFoundError
@@ -14,23 +14,34 @@ __all__ = [
 
 
 class GachaUrl(NamedTuple):
-    url: str
-    region: str
-    auth_token: str
+    parsed_url: ParseResult
+    query_dict: dict[str, str]
 
     @classmethod
     def of(cls, url: str) -> GachaUrl:
         parsed_url = urlparse(url)
-        query_params = parse_qs(parsed_url.query)
-        if 'authkey' not in query_params:
-            raise AuthTokenExtractionError('Parameter "authkey" missing from URL.')
-        if 'game_biz' not in query_params:
-            raise AuthTokenExtractionError('Parameter "game_biz" missing from URL.')
-        region = query_params['game_biz'][0]
-        auth_token = query_params['authkey'][0]
-        logging.debug('Extracted region and token: %s; %s', region, auth_token)
+        query_multidict = parse_qs(parsed_url.query)
+        # There is no method to do the reverse operation,
+        # so we convert it into what urlencode accepts
+        # (which is more usable anyway).
+        query_dict = {k: v[0] for k, v in query_multidict.items()}
+        return cls(parsed_url, query_dict)
 
-        return cls(url, region, auth_token)
+    @property
+    def region(self) -> str | None:
+        return self.query_dict.get('game_biz')
+
+    @property
+    def auth_token(self) -> str | None:
+        return self.query_dict.get('authkey')
+
+    @property
+    def url(self) -> str:
+        return self.parsed_url.geturl()
+
+    def _with_query(self, query_dict: dict[str, str]) -> GachaUrl:
+        parsed_url = self.parsed_url._replace(query=urlencode(query_dict))
+        return GachaUrl(parsed_url, query_dict)
 
 
 def find_gacha_url() -> GachaUrl:
@@ -54,4 +65,10 @@ def find_gacha_url() -> GachaUrl:
         raise AuthTokenExtractionError('Could not find authentication token in the log file. Open the warp history in the game, then try again.')
 
     logging.debug('Found %d matches for getGachaLog URLs; using last', len(matches))
-    return GachaUrl.of(matches[-1].decode('utf-8'))
+    url = GachaUrl.of(matches[-1].decode('utf-8'))
+    if not url.auth_token:
+        raise AuthTokenExtractionError('Parameter "authkey" missing from URL.')
+    if not url.region:
+        raise AuthTokenExtractionError('Parameter "game_biz" missing from URL.')
+    logging.debug('Extracted region and token: %s; %s', url.region, url.auth_token)
+    return url
