@@ -136,4 +136,6 @@ def get_web_cache_path(game_path) -> Path | None:
     if not versions:
         return None
     versions.sort()
+
+    logging.info('Web Cache Version found: %s', '.'.join(versions[-1][0]))
     return versions[-1][1]
