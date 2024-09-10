@@ -39,8 +39,7 @@ def get_usable_port():
         # check if warp journal is already running on this port
         try:
             with urlopen(f'http://localhost:{port}/warp-journal', timeout=0.1) as _:
-                return port
-            panic('Warp Journal is already running.')
+                panic('Warp Journal is already running.')
         except (URLError, HTTPError):
             continue
 
