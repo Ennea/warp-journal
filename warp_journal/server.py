@@ -33,7 +33,9 @@ class Server:
         self._app.route('/find-warp-history-url', method='POST', callback=self._find_warp_history_url)
 
         self._server = WSGIServer(('localhost', port), self._app, handler_class=WebSocketHandler)
-        webbrowser.open(f'http://localhost:{port}')
+        url = f'http://localhost:{port}/'
+        print(f"Opening {url} …")
+        webbrowser.open(url)
         self._server.serve_forever()
 
     def _static_file(self, *args, **kwargs):
