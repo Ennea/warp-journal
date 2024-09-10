@@ -25,13 +25,13 @@ class Client:
             with urlopen(url.url) as request:
                 result = request.read()
         except (URLError, HTTPError) as err:
-            logging.error("Request error", err)
+            logging.error("Request error", exc_info=err)
             raise EndpointError('Error making request.')
 
         try:
             result = json.loads(result)
         except JSONDecodeError as err:
-            logging.error("Decode error", err)
+            logging.error("Decode error", exc_info=err)
             raise RequestError('Error parsing request result as JSON.')
 
         if 'retcode' not in result:
