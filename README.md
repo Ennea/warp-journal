@@ -58,6 +58,52 @@ If you're not dual-booting, you can still manually enter the history URL in Warp
 
 Mac OS is also supported, at least technically; I have no way to test this personally, but if you can, I'd love to hear if it's working :)
 
+### Windows Installation Process
+
+> **TODO: Make this work with poetry/pipx.**
+
+**Pre-requisites:**
+
+-   Python 3.9+ is installed:
+
+    ```psh
+    winget install -e --id Python.Python.3.9
+    ```
+
+-   nuitka is installed:
+
+    ```psh
+    python -m pip install -U nuitka
+    ```
+-   MSIS (Nullsoft Scriptable Install System) is installed.
+
+    ```psh
+    winget install -e --id NSIS.NSIS
+    ```
+-   Directly install the direct dependencies with Pip (not Pipx or in a virtualenv):
+
+    ```psh
+    pip install bottle gevent gevent-websocket
+    ```
+
+**Steps:**
+
+1.  Checkout the repository.
+
+2.  In the repository root directory, run:
+
+    ```
+    nuitka warp_journal
+    ```
+
+    This creates a usable `warp_journal.exe` executable in the `warp_journal.dist\` subfolder.
+
+3.  To create an installer in `dist\` that you can use: from the repository root directory, run:
+
+    ```
+    <path to NSIS>\makensis.exe warp-journal.nsi
+    ```
+
 ## Warp Journal uses
 
 - [Alpine.js](https://github.com/alpinejs/alpine) - [License](3rd-party-licenses/LICENSE_alpinejs)

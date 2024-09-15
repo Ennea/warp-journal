@@ -5,8 +5,8 @@ import sys
 from urllib.request import urlopen
 from urllib.error import URLError, HTTPError
 
-from .error import panic
-from .paths import get_data_path
+from warp_journal.error import panic
+from warp_journal.paths import get_data_path
 
 
 def set_up_logging():

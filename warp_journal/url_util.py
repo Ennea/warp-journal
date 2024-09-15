@@ -5,8 +5,8 @@ import re
 from typing import NamedTuple
 from urllib.parse import ParseResult, urlencode, urlparse, parse_qs
 
-from .paths import get_cache_path
-from .exceptions import AuthTokenExtractionError, LogNotFoundError
+from warp_journal.paths import get_cache_path
+from warp_journal.exceptions import AuthTokenExtractionError, LogNotFoundError
 
 __all__ = [
     'find_gacha_url',
