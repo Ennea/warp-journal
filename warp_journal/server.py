@@ -33,7 +33,9 @@ class Server:
         self._app.route('/find-warp-history-url', method='POST', callback=self._find_warp_history_url)
 
         self._server = WSGIServer(('localhost', port), self._app, handler_class=WebSocketHandler)
-        webbrowser.open(f'http://localhost:{port}')
+        url = f'http://localhost:{port}/'
+        print(f"Opening {url} …")
+        webbrowser.open(url)
         self._server.serve_forever()
 
     def _static_file(self, *args, **kwargs):
@@ -205,16 +207,13 @@ class Server:
         try:
             if not url:
                 url = url_util.find_gacha_url()
-            region, auth_token = url_util.extract_region_and_auth_token(url)
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
             logging.warning('Unable to extract auth token: %s', e)
             return {'message': str(e)}
 
-        logging.debug('Extracted region and token: %s; %s', region, auth_token)
-        self._client.set_region_and_auth_token(region, auth_token)
         try:
-            new_warps_count = self._client.fetch_and_store_warp_history()
+            new_warps_count = self._client.fetch_and_store_warp_history(url)
         except (MissingAuthTokenError, RequestError, EndpointError, UnsupportedRegion) as e:
             bottle.response.status = 500
             return {
@@ -228,10 +227,9 @@ class Server:
     def _find_warp_history_url(self):
         try:
             url = url_util.find_gacha_url()
-            url_util.extract_region_and_auth_token(url)
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
             logging.warning('Unable to extract auth token: %s', e)
             return {'message': str(e)}
 
-        return {'url': url}
+        return {'url': url.url}

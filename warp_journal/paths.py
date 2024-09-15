@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import json
 import os
@@ -8,7 +10,7 @@ from pathlib import Path
 
 from .error import panic
 
-def get_data_path():
+def get_data_path() -> Path:
     if sys.platform == 'win32':
         path = Path(os.environ['APPDATA']) / 'warp-journal'
     elif sys.platform == 'linux':
@@ -32,7 +34,7 @@ def get_data_path():
 
     return path
 
-def get_cache_path():
+def get_cache_path() -> Path | None:
     if not (game_path := get_game_path()):
         return None
 
@@ -61,7 +63,7 @@ def get_cache_path():
     else:
         return path
 
-def get_game_path():
+def get_game_path() -> Path | None:
     """Retrieve the "game path".
 
     The "game path" is the one where the game data is put
@@ -82,7 +84,7 @@ def get_game_path():
     else:
         return None
 
-def get_game_path_windows():
+def get_game_path_windows() -> Path | None:
     if 'USERPROFILE' not in os.environ:
         logging.debug('USERPROFILE environment variable does not exist')
         return None
@@ -95,14 +97,13 @@ def get_game_path_windows():
     regex = re.compile('Loading player data from (.+)/StarRail_Data/data.unity3d')
     with log_path.open() as fp:
         for line in fp:
-            match = regex.search(line)
-            if match is not None:
-                return match.group(1)
+            if match := regex.search(line):
+                return Path(match.group(1))
 
     logging.debug('game path not found in output_log')
     return None
 
-def get_game_path_linux():
+def get_game_path_linux() -> Path | None:
     """Try to determine game folder from launcher configuration."""
     hsr_config_path = Path('~/.local/share/honkers-railway-launcher/config.json').expanduser()
     if not hsr_config_path.exists():
@@ -125,7 +126,7 @@ def get_game_path_linux():
     logging.debug('game folder configuration in launcher could not be found')
     return None
 
-def get_web_cache_path(game_path):
+def get_web_cache_path(game_path) -> Path | None:
     web_caches = game_path / 'StarRail_Data/webCaches'
     versions = [
         (parts, p)
@@ -135,4 +136,6 @@ def get_web_cache_path(game_path):
     if not versions:
         return None
     versions.sort()
+
+    logging.info('Web Cache Version found: %s', '.'.join(versions[-1][0]))
     return versions[-1][1]

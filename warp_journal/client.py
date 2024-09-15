@@ -1,52 +1,37 @@
+from __future__ import annotations
+
 import json
 import logging
 from json.decoder import JSONDecodeError
 from time import sleep
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
-from urllib.parse import urlencode
 
 from .enums import ItemType
-from .exceptions import MissingAuthTokenError, EndpointError, RequestError, UnsupportedRegion
+from .exceptions import EndpointError, RequestError, UnsupportedRegion
 from .database import Database
+from .url_util import GachaUrl
 
 
 class Client:
-    API_BASE_URL = 'https://api-os-takumi.mihoyo.com/common/gacha_record/api/'
 
     def __init__(self):
-        self._region = None
-        self._auth_token = None
         self._database = Database()
 
-    def _request(self, endpoint, extra_params=None):
-        if self._region is None or self._auth_token is None:
-            raise MissingAuthTokenError('Missing auth token.')
-
-        if self._region != 'hkrpg_global':
-            raise UnsupportedRegion('Unsupported region.')
-
-        params = {
-            'lang': 'en',
-            'game_biz': 'hkrpg_global',
-            'authkey': self._auth_token,
-            'authkey_ver': 1
-        }
-        if extra_params is not None:
-            params = params | extra_params
-
-        logging.info('Requesting endpoint %s', endpoint)
+    def _request(self, url: GachaUrl):
+        logging.info("Requesting endpoint %s%s", url.parsed_url.hostname, url.parsed_url.path)
+        logging.debug("URL: %s", url.url)
         try:
-            with urlopen('{}{}?{}'.format(self.API_BASE_URL, endpoint, urlencode(params))) as request:
+            with urlopen(url.url) as request:
                 result = request.read()
         except (URLError, HTTPError) as err:
-            logging.error("Request error", err)
+            logging.error("Request error", exc_info=err)
             raise EndpointError('Error making request.')
 
         try:
             result = json.loads(result)
         except JSONDecodeError as err:
-            logging.error("Decode error", err)
+            logging.error("Decode error", exc_info=err)
             raise RequestError('Error parsing request result as JSON.')
 
         if 'retcode' not in result:
@@ -60,18 +45,23 @@ class Client:
 
         return result['data']
 
-    def _fetch_warp_history(self, banner_type, end_id=None):
-        params = {
-            'gacha_type': banner_type,
-            'size': 20
+    def _fetch_warp_history(self, url: GachaUrl, banner_type: int):
+        if url.region != 'hkrpg_global':
+            raise UnsupportedRegion('Unsupported region.')
+
+        url.parsed_url.params
+        # Note: we will be modifying this in-place
+        query_dict: dict[str, str] = {
+            **url.query_dict,
+            'gacha_type': str(banner_type),
+            'size': '20',
+            'lang': 'en',
         }
 
-        if end_id is not None:
-            params['end_id'] = end_id
-
         latest_warp_id = None
-        while (result := self._request('getGachaLog', params)) and len(result['list']) > 0:
-            end_id = None
+        while result := self._request(url._with_query(query_dict)):
+            if not result['list']:
+                break
             for warp in result['list']:
                 # get the latest warp and store it;
                 # this is the earliest point we can do this, because
@@ -88,16 +78,11 @@ class Client:
                     return
 
                 yield warp
-                end_id = warp['id']
-
-            params['end_id'] = end_id
+            query_dict['end_id'] = str(warp['id'])
             sleep(0.1)  # reasonable delay..?
 
-    def set_region_and_auth_token(self, region, auth_token):
-        self._region = region
-        self._auth_token = auth_token
-
-    def get_banner_types(self):
+    @staticmethod
+    def get_banner_types() -> dict[int, str]:
         return {
             1: 'Stellar Warp',
             2: 'Departure Warp',
@@ -105,13 +90,13 @@ class Client:
             12: 'Light Cone Event Warp'
         }
 
-    def fetch_and_store_warp_history(self):
+    def fetch_and_store_warp_history(self, url: GachaUrl):
         logging.info('Fetching warp history')
         new_warps_count = 0
         for banner_type in self.get_banner_types().keys():
             logging.info('Fetching warp history for banner type %s', banner_type)
             warps = []
-            for warp in self._fetch_warp_history(banner_type):
+            for warp in self._fetch_warp_history(url, banner_type):
                 warps.append({
                     'id': int(warp['id']),  # convert to int for proper sorting
                     'uid': int(warp['uid']),
