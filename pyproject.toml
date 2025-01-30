@@ -15,10 +15,10 @@ packages = [{include = "warp_journal"}]
 warp-journal = 'warp_journal.__main__:main'
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.9"
 
-bottle = "^0.12.25"
-gevent = "^22.10.2"
+bottle = "^0.12.25 || ^0.13"
+gevent = ">22.10"
 gevent-websocket = "^0.10.1"
 greenlet = "^3.0.0"
 "zope.event" = "^4.6"
