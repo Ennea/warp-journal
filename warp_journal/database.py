@@ -2,8 +2,8 @@ import logging
 import sqlite3
 from shutil import copyfile
 
-from .util import get_data_path, panic
-from .enums import ItemType
+from warp_journal.util import get_data_path, panic
+from warp_journal.enums import ItemType
 
 
 # convert a bytestring stored in sqlite back to our enum
