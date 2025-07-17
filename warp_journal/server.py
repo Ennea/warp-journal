@@ -203,9 +203,11 @@ class Server:
 
     def _update_warp_history(self):
         body = cast(Optional[dict], bottle.request.json)
-        url = body.get('url') if body else None
+        provided_url = body.get('url') if body else None
         try:
-            if not url:
+            if provided_url:
+                url = GachaUrl.of(provided_url)
+            else:
                 url = url_util.find_gacha_url()
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
