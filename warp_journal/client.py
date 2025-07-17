@@ -98,11 +98,10 @@ class Client:
 
     @staticmethod
     def get_last_path_segment(banner_type: int) -> str:
-        match banner_type:
-            case 21 | 22:
-                return 'getLdGachaLog'
-            case _:
-                return 'getGachaLog'
+        if banner_type in (21, 22):
+            return 'getLdGachaLog'
+        else:
+            return 'getGachaLog'
 
     def fetch_and_store_warp_history(self, url: GachaUrl):
         logging.info('Fetching warp history')
