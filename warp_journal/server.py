@@ -15,6 +15,7 @@ from . import url_util
 from .client import Client
 from .enums import ItemType
 from .exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
+from .url_util import GachaUrl
 
 
 class Server:
@@ -203,9 +204,11 @@ class Server:
 
     def _update_warp_history(self):
         body = cast(Optional[dict], bottle.request.json)
-        url = body.get('url') if body else None
+        provided_url = body.get('url') if body else None
         try:
-            if not url:
+            if provided_url:
+                url = GachaUrl.of(provided_url)
+            else:
                 url = url_util.find_gacha_url()
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
