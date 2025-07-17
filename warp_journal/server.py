@@ -15,6 +15,7 @@ from . import url_util
 from .client import Client
 from .enums import ItemType
 from .exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
+from .url_util import GachaUrl
 
 
 class Server:

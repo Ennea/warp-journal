@@ -57,8 +57,13 @@ class Client:
             'lang': 'en',
         }
 
+        # Some banners use a different path
+        path_segments = url.parsed_url.path.split('/')
+        path_segments[-1] = self.get_last_path_segment(banner_type)
+        url_with_path = url._with_path('/'.join(path_segments))
+
         latest_warp_id = None
-        while result := self._request(url._with_query(query_dict)):
+        while result := self._request(url_with_path._with_query(query_dict)):
             if not result['list']:
                 break
             for warp in result['list']:
@@ -86,8 +91,18 @@ class Client:
             1: 'Stellar Warp',
             2: 'Departure Warp',
             11: 'Character Event Warp',
-            12: 'Light Cone Event Warp'
+            12: 'Light Cone Event Warp',
+            21: 'Character Collaboration Warp',
+            22: 'Light Cone Collaboration Warp',
         }
+
+    @staticmethod
+    def get_last_path_segment(banner_type: int) -> str:
+        match banner_type:
+            case 21 | 22:
+                return 'getLdGachaLog'
+            case _:
+                return 'getGachaLog'
 
     def fetch_and_store_warp_history(self, url: GachaUrl):
         logging.info('Fetching warp history')

@@ -43,6 +43,10 @@ class GachaUrl(NamedTuple):
         parsed_url = self.parsed_url._replace(query=urlencode(query_dict))
         return GachaUrl(parsed_url, query_dict)
 
+    def _with_path(self, path: str) -> GachaUrl:
+        parsed_url = self.parsed_url._replace(path=path)
+        return GachaUrl(parsed_url, self.query_dict)
+
 
 def find_gacha_url() -> GachaUrl:
     """Find the URL used to fetch gacha history.
@@ -59,7 +63,7 @@ def find_gacha_url() -> GachaUrl:
     with path.open('rb') as fp:
         cache_file = fp.read()
 
-    regex = re.compile(rb'https://[^\0]+/getGachaLog[^\0]*')
+    regex = re.compile(rb'https://[^\0]+/get(?:Ld)?GachaLog[^\0]*')
     matches = regex.findall(cache_file)
     if not matches:
         raise AuthTokenExtractionError('Could not find authentication token in the log file. Open the warp history in the game, then try again.')
