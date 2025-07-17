@@ -49,7 +49,6 @@ class Client:
         if url.region != 'hkrpg_global':
             raise UnsupportedRegion('Unsupported region.')
 
-        url.parsed_url.params
         # Note: we will be modifying this in-place
         query_dict: dict[str, str] = {
             **url.query_dict,
