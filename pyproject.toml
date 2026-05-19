@@ -1,31 +1,34 @@
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
 
-[tool.poetry]
+[project]
 name = "warp-journal"
 version = "1.1.0"
 description = "Honkai: Star Rail gacha tracker and analysis."
-authors = ["Ennea"]
+authors = [{name = "Ennea"}]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "warp_journal"}]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "bottle>=0.12.25,<0.14",
+    "gevent>22.10",
+    "gevent-websocket>=0.10.1,<0.11",
+    "greenlet>=3.0.0,<4",
+    "zope.event>=4.6,<5",
+    "zope.interface>=6.0,<7",
+]
 
-[tool.poetry.scripts]
-warp-journal = 'warp_journal.__main__:main'
+[project.scripts]
+warp-journal = "warp_journal.__main__:main"
 
-[tool.poetry.dependencies]
-python = "^3.9"
+[project.optional-dependencies]
+dev = [
+    "flake8>=6.0.0,<7",
+]
 
-bottle = "^0.12.25 || ^0.13"
-gevent = ">22.10"
-gevent-websocket = "^0.10.1"
-greenlet = "^3.0.0"
-"zope.event" = "^4.6"
-"zope.interface" = "^6.0"
-
-[tool.poetry.group.dev.dependencies]
-flake8 = "^6.0.0"
+[tool.hatch.build.targets.wheel]
+packages = ["warp_journal"]
 
 [tool.pyright]
 defineConstant = { DEBUG = true }
@@ -33,10 +36,5 @@ defineConstant = { DEBUG = true }
 reportMissingTypeStubs = "information"
 reportImportCycles = "warning"
 
-pythonVersion = "3.8"
+pythonVersion = "3.10"
 pythonPlatform = "All"
-
-# Note: If you're using a non-standard path for your virtual environment,
-# which is the default configuraation for poetry, you need to tell pyright where it can be found.
-# Alternatively, you can tell poetry to use a virtual env inside the project folder:
-# `poetry config --local virtualenvs.in-project true`
