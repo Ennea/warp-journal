@@ -1,11 +1,11 @@
 # nuitka-project: --standalone
-# nuitka-project: --include-data-file=./icon.png=icon.png
-# nuitka-project: --include-data-dir=./frontend=frontend
+# nuitka-project: --include-data-file=icon.png=icon.png
+# nuitka-project: --include-data-dir=warp_journal/frontend=warp_journal/frontend
 # nuitka-project-if: {OS} in ('Windows'):
 #     nuitka-project: --mingw64
 #     nuitka-project: --plugin-enable=tk-inter
-#     nuitka-project: --windows-disable-console
-#     nuitka-project: --windows-icon-from-ico=./icon.ico
+#     nuitka-project: --windows-console-mode=disable
+#     nuitka-project: --windows-icon-from-ico=icon.ico
 #     nuitka-project: --windows-company-name=-
 #     nuitka-project: --windows-product-name=Warp Journal
 #     nuitka-project: --windows-file-description=Warp Journal
