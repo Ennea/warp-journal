@@ -11,11 +11,11 @@ from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from geventwebsocket import WebSocketError
 
-from . import url_util
-from .client import Client
-from .enums import ItemType
-from .exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
-from .url_util import GachaUrl
+from warp_journal import url_util
+from warp_journal.client import Client
+from warp_journal.enums import ItemType
+from warp_journal.exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
+from warp_journal.url_util import GachaUrl
 
 
 class Server:

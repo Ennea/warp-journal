@@ -13,8 +13,8 @@
 
 import logging
 
-from .util import set_up_logging, get_usable_port
-from .server import Server
+from warp_journal.server import Server
+from warp_journal.util import get_usable_port, set_up_logging
 
 def main():
     set_up_logging()
