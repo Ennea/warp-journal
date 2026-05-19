@@ -3,7 +3,7 @@
 # nuitka-project: --include-data-dir=warp_journal/frontend=warp_journal/frontend
 # nuitka-project-set: PROJECT_VERSION = __import__("warp_journal").__version__.split("+")[0]
 # nuitka-project-if: {OS} in ('Windows'):
-#     nuitka-project: --mingw64
+#     nuitka-project: --msvc=latest
 #     nuitka-project: --plugin-enable=tk-inter
 #     nuitka-project: --windows-console-mode=disable
 #     nuitka-project: --windows-icon-from-ico=icon.ico
