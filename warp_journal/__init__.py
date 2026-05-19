@@ -1,8 +1,6 @@
-from importlib import import_module
-
-
 try:
-    __version__ = import_module('warp_journal._version').__version__
+    import warp_journal._version as _version
+    __version__ = _version.__version__
 except ImportError:
     __version__ = '0+unknown'
 
