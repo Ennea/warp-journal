@@ -55,7 +55,12 @@ class Client:
             'gacha_type': str(banner_type),
             'size': '20',
             'lang': 'en',
+            'page': '1',
         }
+
+        # Ensure the begin_id parameter is not set
+        # because it breaks pagination.
+        query_dict.pop('begin_id', None)
 
         # Some banners use a different path
         path_segments = url.parsed_url.path.split('/')
