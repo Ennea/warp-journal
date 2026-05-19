@@ -1,7 +1,10 @@
 # nuitka-project: --standalone
 # nuitka-project: --include-data-file=icon.png=icon.png
 # nuitka-project: --include-data-dir=warp_journal/frontend=warp_journal/frontend
-# nuitka-project-set: PROJECT_VERSION = __import__("warp_journal").__version__.split("+")[0]
+# nuitka-project-set: _VERSION = __import__("warp_journal").__version__.split("+")[0]
+# nuitka-project-set: _VERSION_PARTS = _VERSION.split(".")
+# nuitka-project-set: _FILE_VERSION = ".".join(_VERSION_PARTS[:3])
+# nuitka-project-set: PROJECT_VERSION = _FILE_VERSION if ".dev" not in _VERSION else f"{_FILE_VERSION}.{_VERSION.rsplit('.dev', 1)[1]}"
 # nuitka-project-if: {OS} in ('Windows'):
 #     nuitka-project: --msvc=latest
 #     nuitka-project: --plugin-enable=tk-inter
