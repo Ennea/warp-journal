@@ -27,6 +27,13 @@ dev = [
     "flake8>=6.0.0,<7",
 ]
 
+[dependency-groups]
+windows-build = [
+    "nuitka; sys_platform == 'win32'",
+    "ordered-set; sys_platform == 'win32'",
+    "zstandard; sys_platform == 'win32'",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["warp_journal"]
 

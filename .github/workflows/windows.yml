@@ -15,6 +15,8 @@ permissions:
 jobs:
   build-windows-installer:
     runs-on: windows-latest
+    env:
+      UV_SYSTEM_PYTHON: 'true'
 
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -45,14 +47,12 @@ jobs:
       - name: Write generated version module
         run: uvx hatch build --hooks-only
 
-      - name: Install Python build dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install . nuitka ordered-set zstandard
+      - name: Sync build dependencies
+        run: uv sync --group windows-build --frozen
 
       - name: Build standalone executable
         run: >
-          python -m nuitka
+          uv run --group windows-build python -m nuitka
           --assume-yes-for-downloads
           --output-dir=build
           --output-filename=warp-journal.exe
