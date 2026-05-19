@@ -18,6 +18,7 @@ document.addEventListener('alpine:init', () => {
         requestInProgress: false,
         warpHistoryURL: '',
         manualUpdate: false,
+        fullImport: false,
 
         uidData: {},
         selectedUID: null,
@@ -183,6 +184,7 @@ document.addEventListener('alpine:init', () => {
             if (this.manualUpdate) {
                 body.url = this.warpHistoryURL;
             }
+            body.full_import = this.fullImport;
 
             const response = await this.doJsonRequest(fetch('/update-warp-history', {
                 method: 'POST',

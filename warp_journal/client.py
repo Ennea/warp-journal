@@ -45,7 +45,7 @@ class Client:
 
         return result['data']
 
-    def _fetch_warp_history(self, url: GachaUrl, banner_type: int):
+    def _fetch_warp_history(self, url: GachaUrl, banner_type: int, full_import: bool = False):
         if url.region != 'hkrpg_global':
             raise UnsupportedRegion('Unsupported region.')
 
@@ -77,7 +77,7 @@ class Client:
 
                 # return when we reach the latest warp we already have in our history
                 logging.debug('Current warp id is %s. (%s - %s)', warp['id'], warp['time'], warp['name'])
-                if latest_warp_id is not None and latest_warp_id == int(warp['id']):
+                if not full_import and latest_warp_id is not None and latest_warp_id == int(warp['id']):
                     logging.debug('Current id and last id match, returning')
                     return
 
@@ -103,13 +103,13 @@ class Client:
         else:
             return 'getGachaLog'
 
-    def fetch_and_store_warp_history(self, url: GachaUrl):
+    def fetch_and_store_warp_history(self, url: GachaUrl, full_import: bool = False):
         logging.info('Fetching warp history')
         new_warps_count = 0
         for banner_type in self.get_banner_types().keys():
             logging.info('Fetching warp history for banner type %s', banner_type)
             warps = []
-            for warp in self._fetch_warp_history(url, banner_type):
+            for warp in self._fetch_warp_history(url, banner_type, full_import=full_import):
                 warps.append({
                     'id': int(warp['id']),  # convert to int for proper sorting
                     'uid': int(warp['uid']),
