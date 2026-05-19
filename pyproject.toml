@@ -28,6 +28,10 @@ dev = [
 ]
 
 [dependency-groups]
+dev = [
+    "hatch-vcs>=0.5.0",
+    "hatchling>=1.29.0",
+]
 windows-build = [
     "nuitka; sys_platform == 'win32'",
     "ordered-set; sys_platform == 'win32'",

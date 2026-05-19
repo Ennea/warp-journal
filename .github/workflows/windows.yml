@@ -37,18 +37,16 @@ jobs:
         with:
           enable-cache: true
 
+      - name: Sync build dependencies
+        run: uv sync --group windows-build --frozen
+
       - name: Resolve project version
         id: version
         shell: bash
         run: |
-          version=$(uvx --with hatch-vcs hatch version)
+          uv run hatchling build --hooks-only
+          version=$(uv run hatchling version)
           echo "version=$version" >> "$GITHUB_OUTPUT"
-
-      - name: Write generated version module
-        run: uvx --with hatch-vcs hatch build --hooks-only
-
-      - name: Sync build dependencies
-        run: uv sync --group windows-build --frozen
 
       - name: Build standalone executable
         run: >
