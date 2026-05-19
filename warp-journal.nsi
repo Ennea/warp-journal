@@ -1,8 +1,11 @@
 !include "MUI2.nsh"
 !define MUI_ICON "icon.ico"
+!ifndef VERSION
+  !error "VERSION must be defined"
+!endif
 
 Name "Warp Journal"
-OutFile "warp-journal-1.0.1.exe"
+OutFile "warp-journal-${VERSION}.exe"
 Unicode True
 RequestExecutionLevel admin
 InstallDir "$PROGRAMFILES\Warp Journal"

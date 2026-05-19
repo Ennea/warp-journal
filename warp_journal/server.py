@@ -12,6 +12,7 @@ from geventwebsocket.handler import WebSocketHandler
 from geventwebsocket import WebSocketError
 
 from warp_journal import url_util
+from warp_journal import __version__
 from warp_journal.client import Client
 from warp_journal.enums import ItemType
 from warp_journal.exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
@@ -199,7 +200,8 @@ class Server:
 
         return {
             'bannerTypes': banner_types,
-            'uids': uids
+            'uids': uids,
+            'version': __version__,
         }
 
     def _update_warp_history(self):

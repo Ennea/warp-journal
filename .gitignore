@@ -2,3 +2,4 @@
 __pycache__/
 icon/
 dist/
+warp_journal/_version.py

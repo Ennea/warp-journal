@@ -1,6 +1,7 @@
 # nuitka-project: --standalone
 # nuitka-project: --include-data-file=icon.png=icon.png
 # nuitka-project: --include-data-dir=warp_journal/frontend=warp_journal/frontend
+# nuitka-project-set: PROJECT_VERSION = __import__("warp_journal").__version__.split("+")[0]
 # nuitka-project-if: {OS} in ('Windows'):
 #     nuitka-project: --mingw64
 #     nuitka-project: --plugin-enable=tk-inter
@@ -9,7 +10,8 @@
 #     nuitka-project: --windows-company-name=-
 #     nuitka-project: --windows-product-name=Warp Journal
 #     nuitka-project: --windows-file-description=Warp Journal
-#     nuitka-project: --windows-product-version=1.0.1
+#     nuitka-project: --windows-product-version={PROJECT_VERSION}
+#     nuitka-project: --windows-file-version={PROJECT_VERSION}
 
 import logging
 

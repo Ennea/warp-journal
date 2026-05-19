@@ -1,6 +1,6 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('app', () => ({
-        VERSION: '1.0.1',
+        VERSION: null,
 
         // raw data from the backend
         bannerTypes: {},
@@ -62,17 +62,6 @@ document.addEventListener('alpine:init', () => {
         init() {
             this.$refs.dataContainer.classList.remove('hidden');
             this.loadData();
-
-            // check if a newer version is available
-            fetch('https://api.github.com/repos/Ennea/warp-journal/releases/latest').then((response) => {
-                if (response.status == 200) {
-                    return response.json();
-                }
-            }).then((json) => {
-                if (json && this.versionToNumber(json.tag_name) > this.versionToNumber(this.VERSION)) {
-                    this.showUpdateNotification = true;
-                }
-            });
 
             // register a click handler on the document;
             // this handles closing column settings and the uid
@@ -137,6 +126,8 @@ document.addEventListener('alpine:init', () => {
                 }
                 return response.json();
             }).then((json) => {
+                this.VERSION = json.version;
+                this.checkForUpdates();
                 this.bannerTypes = json.bannerTypes;
                 // create filters for the banner types and set up watches
                 this.bannerTypesList = [];
@@ -172,6 +163,22 @@ document.addEventListener('alpine:init', () => {
                     this.selectUID(Object.keys(this.uidData)[0]);
                 }
                 this.dataLoaded = true;
+            });
+        },
+
+        checkForUpdates() {
+            if (this.versionToNumber(this.VERSION) == null) {
+                return;
+            }
+
+            fetch('https://api.github.com/repos/Ennea/warp-journal/releases/latest').then((response) => {
+                if (response.status == 200) {
+                    return response.json();
+                }
+            }).then((json) => {
+                if (json && this.versionToNumber(json.tag_name) > this.versionToNumber(this.VERSION)) {
+                    this.showUpdateNotification = true;
+                }
             });
         },
 
