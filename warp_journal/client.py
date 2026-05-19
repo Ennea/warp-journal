@@ -105,7 +105,7 @@ class Client:
 
     def fetch_and_store_warp_history(self, url: GachaUrl, full_import: bool = False):
         logging.info('Fetching warp history')
-        new_warps_count = 0
+        inserted_warps_count = 0
         for banner_type in self.get_banner_types().keys():
             logging.info('Fetching warp history for banner type %s', banner_type)
             warps = []
@@ -123,11 +123,10 @@ class Client:
                 })
 
             logging.info('Got %d warps', len(warps))  # TODO: log how many warps we actually _stored_ (after implementing fetching missing warps and de-duplication)
-            new_warps_count += len(warps)
             warps.sort(key=lambda warp: warp['id'])
-            self._database.store_warp_history(warps)
+            inserted_warps_count += self._database.store_warp_history(warps)
 
-        return new_warps_count
+        return inserted_warps_count
 
     def get_uids(self):
         return self._database.get_uids()

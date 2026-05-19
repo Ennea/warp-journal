@@ -225,7 +225,7 @@ class Server:
             }
 
         return {
-            'message': f'Retrieved {new_warps_count} new {"warp" if new_warps_count == 1 else "warps"}.'
+            'message': f'Found {new_warps_count} new {"warp" if new_warps_count == 1 else "warps"}.'
         }
 
     def _find_warp_history_url(self):
