@@ -104,7 +104,7 @@ document.addEventListener('alpine:init', () => {
                 return null;
             }
 
-            match = version.match(/^v?(\d{1,2})\.(\d{1,2})(?:\.(\d{1,2}))?$/);
+            const match = version.match(/^v?(\d{1,2})\.(\d{1,2})(?:\.(\d{1,2}))?/);
             if (match == null) {
                 return null;
             }
