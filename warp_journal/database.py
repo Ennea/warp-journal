@@ -123,12 +123,13 @@ class Database:
 
         return id_
 
-    def store_warp_history(self, warps):
+    def store_warp_history(self, warps) -> int:
         if len(warps) == 0:
-            return
+            return 0
 
         logging.info('Storing warp history')
         with self._get_database_connection() as db:
+            before_changes = db._connection.total_changes
             db.cursor.executemany('''
                 INSERT OR IGNORE INTO warp_history
                 ( id, uid, banner_id, banner_type, type, rarity, time, item_id, name )
@@ -136,3 +137,5 @@ class Database:
                 ( :id, :uid, :banner_id, :banner_type, :type, :rarity, :time, :item_id, :name )
             ''', warps)
             db.commit()
+
+            return db._connection.total_changes - before_changes

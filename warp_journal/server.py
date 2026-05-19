@@ -205,6 +205,7 @@ class Server:
     def _update_warp_history(self):
         body = cast(Optional[dict], bottle.request.json)
         provided_url = body.get('url') if body else None
+        full_import = bool(body.get('full_import')) if body else False
         try:
             if provided_url:
                 url = GachaUrl.of(provided_url)
@@ -216,7 +217,7 @@ class Server:
             return {'message': str(e)}
 
         try:
-            new_warps_count = self._client.fetch_and_store_warp_history(url)
+            new_warps_count = self._client.fetch_and_store_warp_history(url, full_import=full_import)
         except (MissingAuthTokenError, RequestError, EndpointError, UnsupportedRegion) as e:
             bottle.response.status = 500
             return {
@@ -224,7 +225,7 @@ class Server:
             }
 
         return {
-            'message': f'Retrieved {new_warps_count} new {"warp" if new_warps_count == 1 else "warps"}.'
+            'message': f'Found {new_warps_count} new {"warp" if new_warps_count == 1 else "warps"}.'
         }
 
     def _find_warp_history_url(self):
