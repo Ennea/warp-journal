@@ -2,8 +2,8 @@ import logging
 import sqlite3
 from shutil import copyfile
 
-from .util import get_data_path, panic
 from .enums import ItemType
+from .util import get_data_path, panic
 
 
 # convert a bytestring stored in sqlite back to our enum

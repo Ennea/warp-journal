@@ -2,3 +2,5 @@
 __pycache__/
 icon/
 dist/
+build/
+warp_journal/_version.py

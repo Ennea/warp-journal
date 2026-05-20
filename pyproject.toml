@@ -1,10 +1,10 @@
 [build-system]
-requires = ["hatchling>=1.26"]
+requires = ["hatchling>=1.26", "hatch-vcs>=0.5"]
 build-backend = "hatchling.build"
 
 [project]
 name = "warp-journal"
-version = "1.1.0"
+dynamic = ["version"]
 description = "Honkai: Star Rail gacha tracker and analysis."
 authors = [{name = "Ennea"}, {name = "FichteFoll", email = "fichtefoll2@googlemail.com"}]
 license = "MIT"
@@ -20,15 +20,36 @@ dependencies = [
 ]
 
 [project.scripts]
-warp-journal = "warp_journal.__main__:main"
+warp-journal = "warp_journal:main"
 
 [project.optional-dependencies]
 dev = [
     "flake8>=6.0.0,<7",
 ]
 
+[dependency-groups]
+dev = [
+    "hatch-vcs>=0.5.0",
+    "hatchling>=1.29.0",
+]
+windows-build = [
+    "nuitka; sys_platform == 'win32'",
+    "ordered-set; sys_platform == 'win32'",
+    "zstandard; sys_platform == 'win32'",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["warp_journal"]
+
+[tool.hatch.version]
+source = "vcs"
+fallback-version = "1.1.0"
+
+[tool.hatch.version.raw-options]
+version_scheme = "no-guess-dev"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "warp_journal/_version.py"
 
 [tool.pyright]
 defineConstant = { DEBUG = true }

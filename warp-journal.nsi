@@ -1,8 +1,11 @@
 !include "MUI2.nsh"
 !define MUI_ICON "icon.ico"
+!ifndef VERSION
+  !error "VERSION must be defined"
+!endif
 
 Name "Warp Journal"
-OutFile "warp-journal-1.0.1.exe"
+OutFile "warp-journal-${VERSION}.exe"
 Unicode True
 RequestExecutionLevel admin
 InstallDir "$PROGRAMFILES\Warp Journal"
@@ -33,7 +36,7 @@ Section "Warp Journal"
   nsExec::Exec 'taskkill /f /im warp-journal.exe'
 
   ; Files to install
-  File /r "warp-journal.dist\*.*"
+  File /r "build\warp_journal_launcher.dist\*"
 
   ; Write the installation path into the registry
   WriteRegStr HKLM "Software\WarpJournal" "InstallDir" "$INSTDIR"
