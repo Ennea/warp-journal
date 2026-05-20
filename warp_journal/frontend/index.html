@@ -269,10 +269,10 @@
                         <template x-for="warp in pagedWarpHistory">
                             <tr :class="warp.rarity == 5 ? 'rarity-5' : warp.rarity == 4 ? 'rarity-4' : ''">
                                 <td><div x-text="warp.numOnBanner"></div></td>
-                                <td class="overflow align-left"><div x-text="warp.name"></div></td>
+                                <td class="overflow align-left" :title="warp.name"><div x-text="warp.name"></div></td>
                                 <td :class="warp.rarityText.length > 1 ? 'star' : ''"><div x-text="warp.rarityText"></div></td>
                                 <td><div x-text="warp.type"></div></td>
-                                <td><div x-text="warp.bannerTypeName"></div></td>
+                                <td class="overflow" :title="warp.bannerTypeName"><div x-text="warp.bannerTypeName"></div></td>
                                 <td><div x-text="warp.pity || '–'"></div></td>
                                 <td><div x-text="warp.time"></div></td>
                             </tr>
