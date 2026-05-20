@@ -36,7 +36,7 @@ Section "Warp Journal"
   nsExec::Exec 'taskkill /f /im warp-journal.exe'
 
   ; Files to install
-  File /r "build\warp-journal.dist\*.*"
+  File /r "build\*.dist\*.*"
 
   ; Write the installation path into the registry
   WriteRegStr HKLM "Software\WarpJournal" "InstallDir" "$INSTDIR"

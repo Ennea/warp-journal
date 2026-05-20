@@ -54,7 +54,7 @@ jobs:
           --assume-yes-for-downloads
           --output-dir=build
           --output-filename=warp-journal.exe
-          warp_journal/__main__.py
+          warp_journal_launcher.py
 
       - name: Install NSIS
         shell: pwsh

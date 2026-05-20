@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [project.scripts]
-warp-journal = "warp_journal.__main__:main"
+warp-journal = "warp_journal:main"
 
 [project.optional-dependencies]
 dev = [

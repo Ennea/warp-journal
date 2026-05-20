@@ -4,4 +4,16 @@ try:
 except ImportError:
     __version__ = '0+unknown'
 
-__all__ = ["__version__"]
+
+def main():
+    import logging
+
+    from warp_journal.server import Server
+    from warp_journal.util import get_usable_port, set_up_logging
+
+    set_up_logging()
+    port = get_usable_port()
+    Server(port)
+    logging.info('Quitting')
+
+__all__ = ["__version__", "main"]
