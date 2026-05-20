@@ -8,8 +8,8 @@ except ImportError:
 def main():
     import logging
 
-    from warp_journal.server import Server
-    from warp_journal.util import get_usable_port, set_up_logging
+    from .server import Server
+    from .util import get_usable_port, set_up_logging
 
     set_up_logging()
     port = get_usable_port()

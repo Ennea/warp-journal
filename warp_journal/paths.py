@@ -8,7 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from warp_journal.error import panic
+from .error import panic
 
 def get_data_path() -> Path:
     if sys.platform == 'win32':

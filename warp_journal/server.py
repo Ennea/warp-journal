@@ -11,12 +11,11 @@ from gevent.pywsgi import WSGIServer
 from geventwebsocket.handler import WebSocketHandler
 from geventwebsocket import WebSocketError
 
-from warp_journal import url_util
-from warp_journal import __version__
-from warp_journal.client import Client
-from warp_journal.enums import ItemType
-from warp_journal.exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
-from warp_journal.url_util import GachaUrl
+from . import __version__
+from .client import Client
+from .enums import ItemType
+from .exceptions import AuthTokenExtractionError, MissingAuthTokenError, LogNotFoundError, RequestError, EndpointError, UnsupportedRegion
+from .url_util import GachaUrl, find_gacha_url
 
 
 class Server:
@@ -212,7 +211,7 @@ class Server:
             if provided_url:
                 url = GachaUrl.of(provided_url)
             else:
-                url = url_util.find_gacha_url()
+                url = find_gacha_url()
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
             logging.warning('Unable to extract auth token: %s', e)
@@ -232,7 +231,7 @@ class Server:
 
     def _find_warp_history_url(self):
         try:
-            url = url_util.find_gacha_url()
+            url = find_gacha_url()
         except (AuthTokenExtractionError, LogNotFoundError) as e:
             bottle.response.status = 400
             logging.warning('Unable to extract auth token: %s', e)

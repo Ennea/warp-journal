@@ -7,10 +7,10 @@ from time import sleep
 from urllib.error import URLError, HTTPError
 from urllib.request import urlopen
 
-from warp_journal.database import Database
-from warp_journal.enums import ItemType
-from warp_journal.exceptions import EndpointError, RequestError, UnsupportedRegion
-from warp_journal.url_util import GachaUrl
+from .database import Database
+from .enums import ItemType
+from .exceptions import EndpointError, RequestError, UnsupportedRegion
+from .url_util import GachaUrl
 
 
 class Client:
